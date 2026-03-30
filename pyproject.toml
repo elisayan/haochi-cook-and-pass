@@ -1,6 +1,6 @@
 [tool.poetry]
 packages = [
-  { include = "haochi_game", from = "haochi-cook-and-pass/client/src" },
+  { include = "haochi-cook-and-pass"},
 ]
 
 [project]
