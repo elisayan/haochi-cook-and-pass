@@ -34,47 +34,58 @@ async def websocket_client():
             
     except Exception as e:
         print(f"Errore di connessione: {e}")
-        
+
 def start_network():
     asyncio.run(websocket_client())
 
 def start_game():
     pygame.init()
     screen = pygame.display.set_mode((800, 600))
-    pygame.display.set_caption("Haochi Cook and Pass")
     clock = pygame.time.Clock()
-
+    
+    # Stato del gioco locale (il nostro "Model" nel client)
+    game_code = "" 
+    
     button_rect = pygame.Rect(350, 250, 100, 50)
-    button_color = (0, 200, 0)
     font = pygame.font.SysFont("Arial", 24)
+    code_font = pygame.font.SysFont("Arial", 48, bold=True)
 
     running = True
     while running:
         screen.fill((255, 255, 255))
 
-        pygame.draw.rect(screen, button_color, button_rect)
-        text = font.render("START", True, (255, 255, 255))
-        screen.blit(text, (button_rect.x + 15, button_rect.y + 10))
+        # Disegno bottone (View)
+        pygame.draw.rect(screen, (0, 200, 0), button_rect)
+        btn_text = font.render("START", True, (255, 255, 255))
+        screen.blit(btn_text, (button_rect.x + 15, button_rect.y + 10))
+
+        # Disegno del codice se presente (View)
+        if game_code:
+            label = font.render("Codice Stanza:", True, (0, 0, 0))
+            code_text = code_font.render(game_code, True, (0, 0, 255))
+            screen.blit(label, (340, 150))
+            screen.blit(code_text, (355, 180))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-
-        # Gestione click bottone
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if button_rect.collidepoint(event.pos):
-                    print("Bottone cliccato! Invio al server...")
-                    # Inviamo un messaggio strutturato (JSON è meglio per il server)
                     payload = json.dumps({"action": "START_GAME", "user": "Player1"})
                     send_queue.put(payload)
 
-        # Process messages from the server
+        # Processo messaggi dal server (Controller)
         while not msg_queue.empty():
-            msg = msg_queue.get()
-            # Handle the message (e.g., update game state)
-            print(f"Processing message: {msg}")
+            raw_msg = msg_queue.get()
+            try:
+                data = json.loads(raw_msg)
+                if data.get("action") == "ROOM_CREATED":
+                    game_code = data.get("code") # Aggiorna il Model locale
+            except:
+                print(f"Messaggio non strutturato: {raw_msg}")
+
         pygame.display.flip()
-        clock.tick(60) # Limit to 60 FPS
+        clock.tick(60)
     pygame.quit()
 
 if __name__ == "__main__":

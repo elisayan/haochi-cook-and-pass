@@ -2,7 +2,10 @@ import asyncio
 import websockets
 import json
 
+from .room_manager import RoomManager
+
 client_connections = set()
+room_manager = RoomManager()
 
 async def register_client(websocket):
     client_connections.add(websocket)
@@ -13,7 +16,13 @@ async def register_client(websocket):
             try:
                 data = json.loads(message)
                 if data.get("action") == "START_GAME":
-                    print(f"L'utente {data.get('user')} ha avviato la partita!")
+                    game_code = room_manager.generate_code(length=4)
+                    print(f"Partita avviata! Codice generato: {game_code}")
+
+                    response = json.dumps({"action":"ROOM_CREATED", "code": game_code})
+
+                    # Invia la risposta al client che ha richiesto la partita
+                    await websocket.send(response)
             except json.JSONDecodeError:
                 pass 
 
