@@ -19,10 +19,3 @@ class Player:
         self.websocket = websocket
         self.state = PlayerState.CONNECTED
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "state": self.state.value,
-            "room_code": self.room_code
-        }
-
