@@ -1,7 +1,7 @@
 import pygame
 
 def draw(screen, font, sub_menu, main_btn, create_btn, join_btn):
-    screen.fill((255, 255, 255))
+    #screen.fill((255, 255, 255))
     
     if sub_menu == "MAIN":
         # Disegna solo il tasto START iniziale
