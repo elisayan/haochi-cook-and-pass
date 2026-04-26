@@ -42,3 +42,10 @@ def draw(screen, font, sub_menu, create_btn, join_btn, start_img, tutorial_img, 
         
         screen.blit(txt_create, (create_btn.x + 5, create_btn.y + 10))
         screen.blit(txt_join, (join_btn.x + 20, join_btn.y + 10))
+
+        return {
+            "create": create_btn,
+            "join": join_btn
+        }
+    
+    

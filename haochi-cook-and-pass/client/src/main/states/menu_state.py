@@ -27,9 +27,9 @@ class MenuState(BaseState):
                 elif self.rects["exit"].collidepoint(event.pos):
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
             elif self.sub_menu == "ROOM_CHOICE":
-                if self.create_btn.collidepoint(event.pos):
+                if self.rects.get("create") and self.rects["create"].collidepoint(event.pos):
                     send_queue.put(json.dumps({"action": "START_GAME"}))
-                elif self.join_btn.collidepoint(event.pos):
+                elif self.rects.get("join") and self.rects["join"].collidepoint(event.pos):
                     model.switch_to("JOIN_INPUT")
 
     def draw(self, screen, start_img, tutorial_img, exit_img):
