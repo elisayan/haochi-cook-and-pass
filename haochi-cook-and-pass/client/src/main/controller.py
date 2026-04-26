@@ -21,7 +21,9 @@ class GameController:
                     running = False
                 # Lo stato corrente decide cosa fare con i click/tasti
                 self.model.current_state.handle_input(event, send_queue, self.model)
-
+            #nel while loop del gioco se lo stato è PLAYING (la partita è in corso) ad ogni ciclo si deve aggiornare lo stato del gioco    
+            if (self.model.current_state_key == "PLAYING"):
+                self.model.current_state.update(pygame.mouse.get_pos(), self.view.screen.get_width(), self.view.screen.get_height())
             self.view.draw(self.model)
             clock.tick(60)
 

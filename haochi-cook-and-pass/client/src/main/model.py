@@ -1,6 +1,7 @@
 from .states.menu_state import MenuState
 from .states.lobby_state import LobbyState
 from .states.join_state import JoinState
+from .states.playing_state import PlayingState
 
 class GameModel:
     def __init__(self):
@@ -11,9 +12,11 @@ class GameModel:
         self.states = {
             "MENU": MenuState(self),
             "LOBBY": LobbyState(self), #todo
-            "JOIN_INPUT": JoinState(self) #todo
+            "JOIN_INPUT": JoinState(self), #todo
+            "PLAYING": PlayingState(self)
         }
-        self.current_state_key = "MENU"
+        #to do rimpostare a MENU
+        self.current_state_key = "PLAYING" #"MENU"
 
     @property
     def current_state(self):
