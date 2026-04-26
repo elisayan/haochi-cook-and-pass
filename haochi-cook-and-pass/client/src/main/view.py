@@ -14,7 +14,8 @@ class GameView:
         self.start_img = self.load_img("start_button.png")
         self.tutorial_img = self.load_img("tutorial_button.png")
         self.exit_img = self.load_img("exit_button.png")
-        self.background = pygame.transform.smoothscale(self.load_img("homepage.jpg", alpha=False), (width, height))
+        self.home_bg = pygame.transform.smoothscale(self.load_img("homepage.jpg", alpha=False), (width, height))
+        self.room_choice_bg = pygame.transform.smoothscale(self.load_img("background.jpg", alpha=False), (width, height))
 
     def load_img(self, name, alpha=True):
         path = self.base_path / "images" / name
@@ -26,7 +27,11 @@ class GameView:
         state = model.current_state_key
         
         if state == "MENU":
-            self.screen.blit(self.background, (0, 0))
+            if model.current_state.sub_menu == "MAIN":
+                self.screen.blit(self.home_bg, (0, 0))
+            elif model.current_state.sub_menu == "ROOM_CHOICE":
+                self.screen.blit(self.room_choice_bg, (0, 0))
+                
             rects = menu_view.draw(
                 self.screen,
                 self.font,
