@@ -10,6 +10,8 @@ if __name__ == "__main__":
 
     pygame.init()
 
+    pygame.display.set_caption("Haochi - Cook and Pass")
+
     model = GameModel()
     view = GameView()
     controller = GameController(model, view)
