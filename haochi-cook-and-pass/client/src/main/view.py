@@ -13,7 +13,11 @@ class GameView:
         #path immagini 
         path_home_bg=self.base_path/"images"/"homepage.jpg"
 
+        self.start_img = pygame.image.load(str(self.base_path/"images"/"start_button.png")).convert_alpha()
+        self.tutorial_img = pygame.image.load(str(self.base_path/"images"/"tutorial_button.png")).convert_alpha()
+        self.exit_img = pygame.image.load(str(self.base_path/"images"/"exit_button.png")).convert_alpha()
         raw_bg = pygame.image.load(str(path_home_bg)).convert()
+
         self.background = pygame.transform.smoothscale(raw_bg, (width, height))
 
     def draw(self, model):
@@ -22,7 +26,12 @@ class GameView:
         
         if state == "MENU":
             self.screen.blit(self.background, (0, 0))
-            model.current_state.draw(self.screen)
+            model.current_state.draw(
+                self.screen,
+                self.start_img,
+                self.tutorial_img,
+                self.exit_img
+            )
         elif state == "LOBBY":
             #se sfondo diverso dal menu
             #self.screen.fill((240, 240, 240))
