@@ -11,14 +11,15 @@ class GameView:
         self.base_path = Path(__file__).resolve().parent.parent.parent.parent
 
         #path immagini 
-        path_home_bg=self.base_path/"images"/"homepage.jpg"
+        self.start_img = self.load_img("start_button.png")
+        self.tutorial_img = self.load_img("tutorial_button.png")
+        self.exit_img = self.load_img("exit_button.png")
+        self.background = pygame.transform.smoothscale(self.load_img("homepage.jpg", alpha=False), (width, height))
 
-        self.start_img = pygame.image.load(str(self.base_path/"images"/"start_button.png")).convert_alpha()
-        self.tutorial_img = pygame.image.load(str(self.base_path/"images"/"tutorial_button.png")).convert_alpha()
-        self.exit_img = pygame.image.load(str(self.base_path/"images"/"exit_button.png")).convert_alpha()
-        raw_bg = pygame.image.load(str(path_home_bg)).convert()
-
-        self.background = pygame.transform.smoothscale(raw_bg, (width, height))
+    def load_img(self, name, alpha=True):
+        path = self.base_path / "images" / name
+        img = pygame.image.load(str(path))
+        return img.convert_alpha() if alpha else img.convert()
 
     def draw(self, model):
         #decide quale template disegnare in base allo stato attuale del modello
@@ -26,12 +27,17 @@ class GameView:
         
         if state == "MENU":
             self.screen.blit(self.background, (0, 0))
-            model.current_state.draw(
+            rects = menu_view.draw(
                 self.screen,
+                self.font,
+                model.current_state.sub_menu,
+                model.current_state.create_btn,
+                model.current_state.join_btn,
                 self.start_img,
                 self.tutorial_img,
                 self.exit_img
             )
+            model.current_state.rects = rects
         elif state == "LOBBY":
             #se sfondo diverso dal menu
             #self.screen.fill((240, 240, 240))

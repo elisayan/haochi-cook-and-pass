@@ -16,7 +16,7 @@ class GameModel:
             "PLAYING": PlayingState(self)
         }
         #to do rimpostare a MENU
-        self.current_state_key = "PLAYING" #"MENU"
+        self.current_state_key = "MENU" #"PLAYING"
 
     @property
     def current_state(self):
