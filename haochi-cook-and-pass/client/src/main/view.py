@@ -3,18 +3,18 @@ from pathlib import Path
 from .templates import menu_view, lobby_view, join_view
 
 class GameView:
-    def __init__(self, width=800, height=600):
+    def __init__(self, width=1024, height=576):
         pygame.init()
-        self.screen = pygame.display.set_mode((width, height))
+        self.screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
         self.font = pygame.font.SysFont("Arial", 24)
         self.code_font = pygame.font.SysFont("Arial", 48, bold=True)
         self.base_path = Path(__file__).resolve().parent.parent.parent.parent
 
         #path immagini 
-        path_home_bg=self.base_path/"images"/"home_background.jpg"
+        path_home_bg=self.base_path/"images"/"homepage.jpg"
 
         raw_bg = pygame.image.load(str(path_home_bg)).convert()
-        self.background = pygame.transform.scale(raw_bg, (width, height))
+        self.background = pygame.transform.smoothscale(raw_bg, (width, height))
 
     def draw(self, model):
         #decide quale template disegnare in base allo stato attuale del modello
