@@ -1,3 +1,4 @@
+import pygame
 from .base_state import BaseState
 
 class LobbyState(BaseState):

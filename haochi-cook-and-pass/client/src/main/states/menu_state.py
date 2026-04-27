@@ -1,3 +1,5 @@
+import sys
+
 import pygame
 import json
 from .base_state import BaseState
@@ -25,7 +27,9 @@ class MenuState(BaseState):
                 elif self.rects["tutorial"].collidepoint(event.pos):
                     print("TUTORIAL")
                 elif self.rects["exit"].collidepoint(event.pos):
+                    print("CHIUSURA IN CORSO...")
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
+                    #model.running = False
             elif self.sub_menu == "ROOM_CHOICE":
                 if self.rects.get("create") and self.rects["create"].collidepoint(event.pos):
                     send_queue.put(json.dumps({"action": "START_GAME"}))
