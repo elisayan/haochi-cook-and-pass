@@ -23,6 +23,9 @@ class GameView:
         return img.convert_alpha() if alpha else img.convert()
 
     def draw(self, model):
+        #if not model.current_state:
+        #    return
+
         #decide quale template disegnare in base allo stato attuale del modello
         state = model.current_state_key
         
@@ -31,7 +34,7 @@ class GameView:
                 self.screen.blit(self.home_bg, (0, 0))
             elif model.current_state.sub_menu == "ROOM_CHOICE":
                 self.screen.blit(self.room_choice_bg, (0, 0))
-                
+
             rects = menu_view.draw(
                 self.screen,
                 self.font,
@@ -44,11 +47,11 @@ class GameView:
             )
             model.current_state.rects = rects
         elif state == "LOBBY":
-            #se sfondo diverso dal menu
-            #self.screen.fill((240, 240, 240))
-            lobby_view.draw(self.screen, model.game_code, self.font, self.code_font)
+            rects = lobby_view.draw(self.screen, model.game_code, self.font, self.code_font)
+            model.current_state.rects = rects
         elif state == "JOIN_INPUT":
-            join_view.draw(self.screen, self.font, model.current_state.input_text)
+            rects = join_view.draw(self.screen, self.font, model.current_state.input_text)
+            model.current_state.rects = rects
         elif state == "PLAYING":
             model = model.current_state
             #si prende il prossimo elemento da dover inserire nel piatto
