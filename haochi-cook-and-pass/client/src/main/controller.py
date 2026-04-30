@@ -9,7 +9,7 @@ class GameController:
         self.view = view
 
     def run(self):
-        #clock = pygame.time.Clock()
+        clock = pygame.time.Clock()
         running = True
         
         while running:# and self.model.running:
@@ -29,7 +29,7 @@ class GameController:
             if (self.model.current_state_key == "PLAYING"):
                 self.model.current_state.update(pygame.mouse.get_pos(), self.view.screen.get_width(), self.view.screen.get_height())
             self.view.draw(self.model)
-            #clock.tick(60)
+            clock.tick(60)
         #print("running: ", running)
         #shutdown()
         #pygame.quit()

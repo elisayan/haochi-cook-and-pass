@@ -23,35 +23,31 @@ class GameView:
         return img.convert_alpha() if alpha else img.convert()
 
     def draw(self, model):
-        #if not model.current_state:
-        #    return
-
         #decide quale template disegnare in base allo stato attuale del modello
         state = model.current_state_key
         
         if state == "MENU":
-            if model.current_state.sub_menu == "MAIN":
-                self.screen.blit(self.home_bg, (0, 0))
-            elif model.current_state.sub_menu == "ROOM_CHOICE":
-                self.screen.blit(self.room_choice_bg, (0, 0))
+            bg = self.home_bg if model.current_state.sub_menu == "MAIN" else self.room_choice_bg
+            
+            self.screen.blit(bg, (0, 0))
 
-            rects = menu_view.draw(
+            menu_view.draw(
                 self.screen,
                 self.font,
                 model.current_state.sub_menu,
-                model.current_state.create_btn,
-                model.current_state.join_btn,
+                model.current_state.rects,
                 self.start_img,
                 self.tutorial_img,
                 self.exit_img
             )
-            model.current_state.rects = rects
-        elif state == "LOBBY":
-            rects = lobby_view.draw(self.screen, model.game_code, self.font, self.code_font)
-            model.current_state.rects = rects
-        elif state == "JOIN_INPUT":
-            rects = join_view.draw(self.screen, self.font, model.current_state.input_text)
-            model.current_state.rects = rects
+        #elif state == "LOBBY":
+        #    pass
+            #rects = lobby_view.draw(self.screen, model.game_code, self.font, self.code_font)
+            #model.current_state.rects = rects
+        #elif state == "JOIN_INPUT":
+        #    pass
+            #rects = join_view.draw(self.screen, self.font, model.current_state.input_text)
+            #model.current_state.rects = rects
         elif state == "PLAYING":
             model = model.current_state
             #si prende il prossimo elemento da dover inserire nel piatto
