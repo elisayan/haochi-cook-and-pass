@@ -11,6 +11,8 @@ class Player:
         self.websocket = websocket
         self.state = PlayerState.CONNECTED
         self.room_code = None
+        self.position = None #posizione all'interno del giro della partita
+        self.score = 0.0 #punteggio del giocatore all'interno della partitaoikgt
 
     def disconnect(self):
         self.state = PlayerState.DISCONNECTED
