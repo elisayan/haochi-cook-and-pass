@@ -12,7 +12,7 @@ async def register_client(websocket):
     print(f"Player {player_id} connesso.")
 
     try:
-        # Ciclo di ricezione messaggi
+        # Ciclo di ricezione messaggi infinito
         async for message in websocket:
             try:
                 data = json.loads(message)

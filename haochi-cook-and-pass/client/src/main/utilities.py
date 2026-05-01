@@ -86,7 +86,7 @@ class Element ():
         if self.position[1] - half_h < 0:
             if not can_exit_top:
                 self.position[1] = half_h
-                self.velocity[1] *= -1
+                self.velocity[1] *= -1    
         elif self.position[1] + half_h > screen_height:
             self.position[1] = screen_height - half_h
             self.velocity[1] *= -1
@@ -192,11 +192,37 @@ class CountdownThread(threading.Thread):
         while self.running:
             sleep(0.1)
             self.curr_time += 0.1
-
     def get_current_time(self):
         """Ritorna il valore attuale del timer"""
         return round(self.curr_time, 1)
     
     def reset_timer(self):
         self.curr_time = 0.0
+
+class PartialMessage():
+    pass
+
+class PassIngredientMsg(PartialMessage):
+    def __init__(self, ingr_name, direction, score, dimension):
+        #si crea un dizionario che è il messaggio parziale che deve essere inviato
+        self.msg = {
+            "ingr_name": ingr_name,
+            "direction": direction.name, #conversion of Side... in string
+            "score": score,
+            "dimension": dimension.tolist(), #converion of numpy array to List
+            "action": "PASS_INGREDIENT"
+        }
+
+class CompletePlateMsg(PartialMessage):
+    def __init__(self, list_ingr, total_score, finished_all_plates = False):
+        list_names = []
+        for ingr in list_ingr:
+            list_names.append(ingr.name)
+        self.msg = {
+            "completed_plate": list_names,
+            "finished_all_plates": finished_all_plates,
+            "gained_score": total_score,
+            "action": "PLATE_COMPLETE"
+        }
+        
 

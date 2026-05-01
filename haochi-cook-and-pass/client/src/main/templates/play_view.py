@@ -1,7 +1,7 @@
 import pygame
 from pathlib import Path
 
-def draw_game(screen, plate, list_elem, current_recipe, next_ingredient, show_error, score, show_to_arrow, show_left_right_arrows, tick_rotation):
+def draw_game(screen, plate, list_elem, current_recipe, next_ingredient, show_error, score, show_up_arrow, show_left_right_arrows, tick_rotation):
         """Metodo che si occupa unicamente di renderizzare"""
         width = screen.get_width()
         height = screen.get_height()
@@ -13,7 +13,7 @@ def draw_game(screen, plate, list_elem, current_recipe, next_ingredient, show_er
         
         path_arrow = Path(__file__).resolve().parent.parent / "images" / "arrow.png"
         #Freccia in alto per indicare di mandare il piatto in cucina
-        if show_to_arrow:
+        if show_up_arrow:
             _render_element(screen, path_arrow, [width / 2, 50], [80, 80])
 
         if show_left_right_arrows:
