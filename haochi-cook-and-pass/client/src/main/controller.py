@@ -68,6 +68,7 @@ class GameController:
         #    self.model.current_state.update_players_in_game(data.get("players_id"), data.get("is_starting_player"))
         #inviato quando si aggiunge un nuovo giocatore alla partita
         if data.get("action") == "UPDATE_CURRENT_PLAYERS":
+            #if hasattr(self.model.current_state, "update_players_in_game"):
             self.model.current_state.update_players_in_game(data.get("players_id"), data.get("is_starting_player"))
         if data.get("action") == "CHANGE_MODEL_STATE":
             self.model.set_state(data.get("current_state"))#è "LOBBY" 

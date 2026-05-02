@@ -105,11 +105,13 @@ class LobbyState(BaseState):
                 succ = index_plate + 1
                 #si spostano indietro ai piatti precedenti gli id dei giocatori già collocati
                 self._shift_players_backward(succ, max(self.playing_turn) + 1)
-            else:
-                #si trova il piatto libero e si sostituisce con l'id del giocatore presente dopo
-                for i in range(0, max(self.playing_turn)):
-                    if self.playing_turn.get(i) is None:
-                        self._shift_players_backward(i + 1, max(self.playing_turn) + 1)
+            
+            if not self.playing_turn:
+                return
+            #si trova il piatto libero e si sostituisce con l'id del giocatore presente dopo
+            for i in range(0, max(self.playing_turn)):
+                if self.playing_turn.get(i) is None:
+                    self._shift_players_backward(i + 1, max(self.playing_turn) + 1)
     def _shift_players_backward(self, inf, sup):
         for i in range(inf, sup):
                     if self.playing_turn.get(i):

@@ -32,10 +32,8 @@ class MenuState(BaseState):
                     print("TUTORIAL")
                 elif self.rects["exit"].collidepoint(event.pos):
                     print("CHIUSURA IN CORSO...")
-                    # USA pygame.event.post invece di chiamare direttamente quit
-                    # Ma assicurati di uscire subito dal metodo
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
-                    return  # Importante: esci subito
+                    return
                     
             elif self.sub_menu == "ROOM_CHOICE":
                 if self.rects.get("create") and self.rects["create"].collidepoint(event.pos):
