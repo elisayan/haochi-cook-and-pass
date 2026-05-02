@@ -7,6 +7,7 @@ class GameView:
         pygame.init()
         self.screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
         self.font = pygame.font.SysFont("Arial", 24)
+        self.title_font = pygame.font.SysFont("Comic Sans MS", 40, bold=True)
         self.code_font = pygame.font.SysFont("Arial", 48, bold=True)
         self.base_path = Path(__file__).resolve().parent.parent.parent.parent
 
@@ -34,6 +35,7 @@ class GameView:
             menu_view.draw(
                 self.screen,
                 self.font,
+                self.title_font,
                 model.current_state.sub_menu,
                 model.current_state.rects,
                 self.start_img,
