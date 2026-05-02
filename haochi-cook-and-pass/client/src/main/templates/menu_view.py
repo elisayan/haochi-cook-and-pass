@@ -1,6 +1,6 @@
 import pygame
 
-def draw(screen, font, title_font, sub_menu, rects_dict, start_img, tutorial_img, exit_img):
+def draw(screen, font, title_font, sub_menu, rects_dict, start_img, tutorial_img, exit_img, create_img, join_img):
     #screen.fill((255, 255, 255))
     
     if sub_menu == "MAIN":
@@ -24,16 +24,10 @@ def draw(screen, font, title_font, sub_menu, rects_dict, start_img, tutorial_img
         screen.blit(line2, (center_x - line2.get_width() // 2, 155))
         screen.blit(line3, (center_x - line3.get_width() // 2, 205))
 
-        create_btn = rects_dict["create"]
-        join_btn = rects_dict["join"]
-
-        pygame.draw.rect(screen, (0, 100, 200), create_btn)
-        pygame.draw.rect(screen, (200, 100, 0), join_btn)
-
-        txt_create = font.render("CREATE ROOM", True, (255, 255, 255))
-        txt_join = font.render("JOIN ROOM", True, (255, 255, 255))
+        create = pygame.transform.smoothscale(create_img, (rects_dict["create"].width, rects_dict["create"].height))
+        join = pygame.transform.smoothscale(join_img, (rects_dict["join"].width, rects_dict["join"].height))
         
-        screen.blit(txt_create, (create_btn.centerx - txt_create.get_width() // 2, create_btn.centery - txt_create.get_height() // 2))
-        screen.blit(txt_join, (join_btn.centerx - txt_join.get_width() // 2, join_btn.centery - txt_join.get_height() // 2))
+        screen.blit(create, rects_dict["create"])
+        screen.blit(join, rects_dict["join"])
     
     

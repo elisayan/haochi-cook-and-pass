@@ -15,6 +15,8 @@ class GameView:
         self.start_img = self.load_img("start_button.png")
         self.tutorial_img = self.load_img("tutorial_button.png")
         self.exit_img = self.load_img("exit_button.png")
+        self.create_img = self.load_img("create.png")
+        self.join_img = self.load_img("join.png")
         self.home_bg = pygame.transform.smoothscale(self.load_img("homepage.jpg", alpha=False), (width, height))
         self.room_choice_bg = pygame.transform.smoothscale(self.load_img("background.jpg", alpha=False), (width, height))
 
@@ -40,7 +42,9 @@ class GameView:
                 model.current_state.rects,
                 self.start_img,
                 self.tutorial_img,
-                self.exit_img
+                self.exit_img,
+                self.create_img,
+                self.join_img
             )
         elif state == "LOBBY":
             #TO DO rimuovere

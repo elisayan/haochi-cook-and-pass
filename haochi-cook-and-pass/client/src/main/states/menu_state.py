@@ -15,8 +15,8 @@ class MenuState(BaseState):
             "tutorial": pygame.Rect(400, 380, 220, 80),
             "exit": pygame.Rect(400, 460, 220, 80),
 
-            "create": pygame.Rect(250, 250, 150, 50),
-            "join": pygame.Rect(450, 250, 150, 50)
+            "create": pygame.Rect(242, 350, 220, 80),
+            "join": pygame.Rect(562, 350, 220, 80)
         }
 
     def handle_input(self, event, send_queue, model):
