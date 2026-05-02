@@ -4,19 +4,14 @@ def draw(screen, font, sub_menu, rects_dict, start_img, tutorial_img, exit_img):
     #screen.fill((255, 255, 255))
     
     if sub_menu == "MAIN":
-        start_rect = rects_dict["start"]
-        tutorial_rect = rects_dict["tutorial"]
-        exit_rect = rects_dict["exit"]
+        start = pygame.transform.smoothscale(start_img, (rects_dict["start"].width, rects_dict["start"].height))
+        tutorial = pygame.transform.smoothscale(tutorial_img, (rects_dict["tutorial"].width, rects_dict["tutorial"].height))
+        exit_b = pygame.transform.smoothscale(exit_img, (rects_dict["exit"].width, rects_dict["exit"].height))
 
-        start = pygame.transform.smoothscale(start_img, (start_rect.width, start_rect.height))
-        tutorial = pygame.transform.smoothscale(tutorial_img, (tutorial_rect.width, tutorial_rect.height))
-        exit_b = pygame.transform.smoothscale(exit_img, (exit_rect.width, exit_rect.height))
+        screen.blit(start, rects_dict["start"])
+        screen.blit(tutorial, rects_dict["tutorial"])
+        screen.blit(exit_b, rects_dict["exit"])
 
-        # Disegna e basta
-        screen.blit(start, start_rect)
-        screen.blit(tutorial, tutorial_rect)
-        screen.blit(exit_b, exit_rect)
-        
     elif sub_menu == "ROOM_CHOICE":
         create_btn = rects_dict["create"]
         join_btn = rects_dict["join"]
