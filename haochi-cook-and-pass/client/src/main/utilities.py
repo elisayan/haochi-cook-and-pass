@@ -175,6 +175,13 @@ class Ingredient(Element):
             return True
         return False
     
+class Player_Id(Ingredient):
+    def __init__(self, image_name, dimension:tuple, original_pos, position = (0, 0), score = 0.0):
+        super().__init__(image_name, dimension, position, score)   
+        self.is_in_plate = False
+        self.original_pos = np.array([float(original_pos[0]), float(original_pos[1])])
+        self.position = self.original_pos.copy()
+    
 import threading
 from time import sleep
 

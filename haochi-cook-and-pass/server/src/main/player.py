@@ -12,7 +12,9 @@ class Player:
         self.state = PlayerState.CONNECTED
         self.room_code = None
         self.position = None #posizione all'interno del giro della partita
+        #La posizione viene scelta dall'utente che ha avviato la partita
         self.score = 0.0 #punteggio del giocatore all'interno della partitaoikgt
+        self.ingr_id = None #identificativo dell'utente all'interno della partita come nome di un ingrediente
 
     def disconnect(self):
         self.state = PlayerState.DISCONNECTED

@@ -57,11 +57,21 @@ class Room:
             self.state = RoomState.READY
 
     #settata in modo casuale TO DO fare settare il giro al creatore della stanza 
-    def set_players_position_in_play(self):
+    def set_random_players_position_in_play(self):
         list_players = list(self.players.values())
         for index, player in enumerate(list_players):
             player.position = index
 
+    def set_players_position_in_play(self, players_pos_by_ingr_id):
+        for pos, player_ingr_id in enumerate(players_pos_by_ingr_id):
+            self._get_player_from_ingr_id(player_ingr_id).position = pos   
+
+    def _get_player_from_ingr_id(self, ingr_id):
+        for player in self.players.values():
+            if player.ingr_id == ingr_id:
+                return player    
+        return None
+    
     #funzione che aggiorna il giro dei giocatori nella partita dopo che uno di essi è uscito
     def _update_players_position_in_play(self, removed_player_position):
         list_players = list(self.players.values())

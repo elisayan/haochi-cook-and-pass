@@ -7,16 +7,17 @@ class GameModel:
     def __init__(self):
         self.game_code = ""
         self.player_id = ""
+        self.ingr_id = ""
         
         # Dizionario degli stati
         self.states = {
             "MENU": MenuState(self),
-            #"LOBBY": LobbyState(self), #todo
-            #"JOIN_INPUT": JoinState(self), #todo
+            "LOBBY": LobbyState(self),
+            "JOIN_INPUT": JoinState(self), #todo
             "PLAYING": PlayingState(self)
         }
         #to do rimpostare a MENU
-        self.current_state_key = "MENU" #"PLAYING"
+        self.current_state_key = "LOBBY" #"PLAYING" #"MENU"
 
     @property
     def current_state(self):

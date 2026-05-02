@@ -40,14 +40,13 @@ class GameView:
                 self.tutorial_img,
                 self.exit_img
             )
-        #elif state == "LOBBY":
-        #    pass
-            #rects = lobby_view.draw(self.screen, model.game_code, self.font, self.code_font)
-            #model.current_state.rects = rects
-        #elif state == "JOIN_INPUT":
-        #    pass
-            #rects = join_view.draw(self.screen, self.font, model.current_state.input_text)
-            #model.current_state.rects = rects
+        elif state == "LOBBY":
+            #TO DO rimuovere
+            model.game_code = "1234"
+            model.ingr_id = "shrimp" 
+            lobby_view.draw(self.screen, model.game_code, model.ingr_id, model.current_state.ready_players, model.current_state.is_starting_player, self.font, self.code_font, model.current_state.circle, model.current_state.plates, model.current_state.start_btn, model.current_state.quit_btn)
+        elif state == "JOIN_INPUT":
+            join_view.draw(self.screen, self.font, model.current_state.input_text)
         elif state == "PLAYING":
             model = model.current_state
             #si prende il prossimo elemento da dover inserire nel piatto
