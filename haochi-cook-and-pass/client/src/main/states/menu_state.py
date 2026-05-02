@@ -11,9 +11,10 @@ class MenuState(BaseState):
         self.font = pygame.font.SysFont("Arial", 24)
 
         self.rects = {
-            "start": pygame.Rect(400, 200, 220, 80),
-            "tutorial": pygame.Rect(400, 300, 220, 80),
-            "exit": pygame.Rect(400, 400, 220, 80),
+            "start": pygame.Rect(400, 300, 220, 80),
+            "tutorial": pygame.Rect(400, 380, 220, 80),
+            "exit": pygame.Rect(400, 460, 220, 80),
+
             "create": pygame.Rect(250, 250, 150, 50),
             "join": pygame.Rect(450, 250, 150, 50)
         }
