@@ -9,7 +9,6 @@ class MenuState(BaseState):
         super().__init__(game)
         self.sub_menu = "MAIN"
         self.font = pygame.font.SysFont("Arial", 24)
-        self.should_quit = False  # Nuovo flag
 
         self.rects = {
             "start": pygame.Rect(400, 200, 220, 80),
