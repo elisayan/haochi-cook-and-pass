@@ -1,5 +1,4 @@
-# menu_state.py
-import sys
+#import sys
 import pygame
 import json
 from .base_state import BaseState

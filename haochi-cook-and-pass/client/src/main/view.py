@@ -18,7 +18,7 @@ class GameView:
         self.create_img = self.load_img("create.png")
         self.join_img = self.load_img("join.png")
         self.home_bg = pygame.transform.smoothscale(self.load_img("homepage.jpg", alpha=False), (width, height))
-        self.room_choice_bg = pygame.transform.smoothscale(self.load_img("background.jpg", alpha=False), (width, height))
+        self.general_bg = pygame.transform.smoothscale(self.load_img("background.jpg", alpha=False), (width, height))
 
     def load_img(self, name, alpha=True):
         path = self.base_path / "images" / name
@@ -30,7 +30,7 @@ class GameView:
         state = model.current_state_key
         
         if state == "MENU":
-            bg = self.home_bg if model.current_state.sub_menu == "MAIN" else self.room_choice_bg
+            bg = self.home_bg if model.current_state.sub_menu == "MAIN" else self.general_bg
             
             self.screen.blit(bg, (0, 0))
 
@@ -52,6 +52,7 @@ class GameView:
             model.ingr_id = "shrimp" 
             lobby_view.draw(self.screen, model.game_code, model.ingr_id, model.current_state.ready_players, model.current_state.is_starting_player, self.font, self.code_font, model.current_state.circle, model.current_state.plates, model.current_state.start_btn, model.current_state.quit_btn)
         elif state == "JOIN_INPUT":
+            self.screen.blit(self.general_bg, (0, 0))
             join_view.draw(self.screen, self.font, model.current_state.input_text)
         elif state == "PLAYING":
             model = model.current_state

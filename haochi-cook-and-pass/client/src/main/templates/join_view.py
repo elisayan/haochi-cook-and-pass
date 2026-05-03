@@ -1,7 +1,7 @@
 import pygame
 
 def draw(screen, font, input_text):
-    screen.fill((255, 255, 255))
+    #screen.fill((255, 255, 255))
     label = font.render("Join your friends kitchen:", True, (0, 0, 0))
     screen.blit(label, (250, 200))
     
