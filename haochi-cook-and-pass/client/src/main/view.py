@@ -45,7 +45,8 @@ class GameView:
                 self.tutorial_img,
                 self.exit_img,
                 self.create_img,
-                self.join_img
+                self.join_img,
+                self.back_arrow_img
             )
         elif state == "LOBBY":
             #TO DO rimuovere

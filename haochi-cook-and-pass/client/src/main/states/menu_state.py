@@ -15,7 +15,8 @@ class MenuState(BaseState):
             "exit": pygame.Rect(400, 460, 220, 80),
 
             "create": pygame.Rect(242, 350, 220, 80),
-            "join": pygame.Rect(562, 350, 220, 80)
+            "join": pygame.Rect(562, 350, 220, 80),
+            "back_arrow": pygame.Rect(20, 20, 60, 50)
         }
 
     def handle_input(self, event, send_queue, model):
@@ -39,3 +40,5 @@ class MenuState(BaseState):
                     send_queue.put(json.dumps({"action": "START_GAME"}))
                 elif self.rects.get("join") and self.rects["join"].collidepoint(event.pos):
                     model.switch_to("JOIN_INPUT")
+                elif self.rects.get("back_arrow") and self.rects["back_arrow"].collidepoint(event.pos):
+                    self.sub_menu = "MAIN"
