@@ -4,9 +4,9 @@ import pygame
 import json
 from .base_state import BaseState
 
-class MenuState(BaseState):
-    def __init__(self, game):
-        super().__init__(game)
+class MenuState():
+    def __init__(self):
+        #super().__init__(game)
         self.sub_menu = "MAIN"
         self.font = pygame.font.SysFont("Arial", 24)
 
