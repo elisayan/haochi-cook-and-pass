@@ -6,7 +6,15 @@ class JoinState(BaseState):
         super().__init__(model)
         self.input_text = ""
 
+        self.rects = {
+            "back_arrow": pygame.Rect(20, 20, 60, 50)
+        }
+
     def handle_input(self, event, send_queue, model):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.rects["back_arrow"].collidepoint(event.pos):
+                model.switch_to("MENU")
+
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_BACKSPACE:
                 self.input_text = self.input_text[:-1]

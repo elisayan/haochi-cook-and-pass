@@ -9,7 +9,7 @@ class GameView:
         self.font = pygame.font.SysFont("Arial", 24)
         self.title_font = pygame.font.SysFont("Comic Sans MS", 40, bold=True)
         self.code_font = pygame.font.SysFont("Arial", 48, bold=True)
-        self.base_path = Path(__file__).resolve().parent.parent.parent.parent
+        self.base_path = Path(__file__).resolve().parent
 
         #path immagini 
         self.start_img = self.load_img("start_button.png")
@@ -17,8 +17,9 @@ class GameView:
         self.exit_img = self.load_img("exit_button.png")
         self.create_img = self.load_img("create.png")
         self.join_img = self.load_img("join.png")
+        self.back_arrow_img = self.load_img("back_arrow.png")
         self.home_bg = pygame.transform.smoothscale(self.load_img("homepage.jpg", alpha=False), (width, height))
-        self.room_choice_bg = pygame.transform.smoothscale(self.load_img("background.jpg", alpha=False), (width, height))
+        self.general_bg = pygame.transform.smoothscale(self.load_img("background.jpg", alpha=False), (width, height))
 
     def load_img(self, name, alpha=True):
         path = self.base_path / "images" / name
@@ -30,7 +31,7 @@ class GameView:
         state = model.current_state_key
         
         if state == "MENU":
-            bg = self.home_bg if model.current_state.sub_menu == "MAIN" else self.room_choice_bg
+            bg = self.home_bg if model.current_state.sub_menu == "MAIN" else self.general_bg
             
             self.screen.blit(bg, (0, 0))
 
@@ -44,7 +45,8 @@ class GameView:
                 self.tutorial_img,
                 self.exit_img,
                 self.create_img,
-                self.join_img
+                self.join_img,
+                self.back_arrow_img
             )
         elif state == "LOBBY":
             #TO DO rimuovere
@@ -52,7 +54,8 @@ class GameView:
             model.ingr_id = "shrimp" 
             lobby_view.draw(self.screen, model.game_code, model.ingr_id, model.current_state.ready_players, model.current_state.is_starting_player, self.font, self.code_font, model.current_state.circle, model.current_state.plates, model.current_state.start_btn, model.current_state.quit_btn)
         elif state == "JOIN_INPUT":
-            join_view.draw(self.screen, self.font, model.current_state.input_text)
+            self.screen.blit(self.general_bg, (0, 0))
+            join_view.draw(self.screen, self.title_font, self.font, model.current_state.rects,self.back_arrow_img, model.current_state.input_text)
         elif state == "PLAYING":
             model = model.current_state
             #si prende il prossimo elemento da dover inserire nel piatto

@@ -1,6 +1,6 @@
 import pygame
 
-def draw(screen, font, title_font, sub_menu, rects_dict, start_img, tutorial_img, exit_img, create_img, join_img):
+def draw(screen, font, title_font, sub_menu, rects_dict, start_img, tutorial_img, exit_img, create_img, join_img, back_arrow_img):
     #screen.fill((255, 255, 255))
     
     if sub_menu == "MAIN":
@@ -26,8 +26,11 @@ def draw(screen, font, title_font, sub_menu, rects_dict, start_img, tutorial_img
 
         create = pygame.transform.smoothscale(create_img, (rects_dict["create"].width, rects_dict["create"].height))
         join = pygame.transform.smoothscale(join_img, (rects_dict["join"].width, rects_dict["join"].height))
+        back_arrow = pygame.transform.smoothscale(back_arrow_img, (rects_dict["back_arrow"].width, rects_dict["back_arrow"].height))
         
+
         screen.blit(create, rects_dict["create"])
         screen.blit(join, rects_dict["join"])
+        screen.blit(back_arrow, rects_dict["back_arrow"])
     
     
