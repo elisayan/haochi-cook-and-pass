@@ -41,8 +41,16 @@ async def handle_start_game(websocket, current_player, data):
 # - Si deve avvisare ogni giocatore nella room che si è unito un nuovo giocatore (per adesso si avvisa solo il giocatore che ha avviato la partita) OK
 async def handle_join_room(websocket, current_player, data):
     #Si aggiunge un utente alla partita  
-    room = room_manager.get_room(current_player.room_code)
+    game_code = data.get("code")
+    room = room_manager.get_room(game_code)
+
+    if room is None:
+        await websocket.send(json.dumps({"action": "ERROR", "message": "Room not found"}))
+        return
+
+    room = room_manager.get_room(game_code)
     room.add_player(current_player)
+    
     ingr_possible_ids = ["lemon", "orange", "pepper", "rice", "shrimp", "carrot", "basil", "broccoli"]
     players_in_room = room.players
     taken_ids = []
