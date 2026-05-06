@@ -8,6 +8,7 @@ class GameModel:
         self.game_code = ""
         self.player_id = ""
         self.ingr_id = ""
+        self.error_message = ""
         
         # Dizionario degli stati
         self.states = {

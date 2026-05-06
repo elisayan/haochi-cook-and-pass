@@ -6,6 +6,7 @@ class JoinState(BaseState):
     def __init__(self, model):
         super().__init__(model)
         self.input_text = ""
+        self.error_message = ""
         self.max_length = 4
 
         self.card_rect = pygame.Rect(0, 0, 500, 350)

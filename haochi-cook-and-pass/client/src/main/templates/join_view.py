@@ -1,9 +1,9 @@
 import pygame
 
-def draw(screen, title_font, font, rects, back_arrow_img, input_text):
+def draw(screen, title_font, font, rects, back_arrow_img, input_text, error_message):
     width, height = screen.get_size()
     
-    card_width, card_height = 500, 350
+    card_width, card_height = 500, 400  # Aumentata l'altezza per l'errore
     card_rect = pygame.Rect(0, 0, card_width, card_height)
     card_rect.center = (width // 2, height // 2)
     
@@ -21,12 +21,15 @@ def draw(screen, title_font, font, rects, back_arrow_img, input_text):
     screen.blit(subtitle, subtitle_rect)
     
     input_rect = pygame.Rect(0, 0, 280, 55)
-    input_rect.center = (width // 2, card_rect.centery)
+    input_rect.center = (width // 2, card_rect.centery - 20)  # Leggermente più in alto
     
     glow_rect = input_rect.inflate(8, 8)
     pygame.draw.rect(screen, (255, 200, 150, 100), glow_rect, border_radius=15)
     pygame.draw.rect(screen, (255, 255, 255), input_rect, border_radius=12)
-    pygame.draw.rect(screen, (255, 160, 80), input_rect, 2, border_radius=12)
+    
+    # Cambia il bordo in rosso se c'è un errore
+    border_color = (255, 80, 80) if error_message else (255, 160, 80)
+    pygame.draw.rect(screen, border_color, input_rect, 2, border_radius=12)
     
     if input_text:
         txt_surface = font.render(input_text, True, (60, 40, 30))
@@ -41,6 +44,21 @@ def draw(screen, title_font, font, rects, back_arrow_img, input_text):
         pygame.draw.line(screen, (255, 160, 80), 
                         (cursor_x, cursor_y), 
                         (cursor_x, cursor_y + 24), 2)
+    
+    if error_message:
+        error_bg_rect = pygame.Rect(0, 0, card_width - 60, 50)
+        error_bg_rect.center = (width // 2, card_rect.centery + 50)
+        error_surface = pygame.Surface((error_bg_rect.width, error_bg_rect.height), pygame.SRCALPHA)
+        corner_radius = 12
+        pygame.draw.rect(error_surface, (255, 200, 200, 200), 
+                        error_surface.get_rect(), 
+                        border_radius=corner_radius)
+        #error_surface.fill((255, 200, 200, 180))
+        screen.blit(error_surface, error_bg_rect)
+        
+        error_text = font.render(error_message, True, (200, 40, 40))
+        error_text_rect = error_text.get_rect(center=error_bg_rect.center)
+        screen.blit(error_text, error_text_rect)
     
     btn_width, btn_height = 150, 45
     btn_rect = pygame.Rect(0, 0, btn_width, btn_height)
