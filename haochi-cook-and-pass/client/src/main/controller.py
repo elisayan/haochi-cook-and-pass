@@ -34,7 +34,7 @@ class GameController:
                 #    self.model.current_state.update_players_in_game(["pepper", "rice", "shrimp"], True)
 
             #nel while loop del gioco se lo stato è PLAYING (la partita è in corso) ad ogni ciclo si deve aggiornare lo stato del gioco    
-            if (self.model.current_state_key == "PLAYING" or self.model.current_state_key == "LOBBY"):
+            if self.model.current_state_key in ["PLAYING", "LOBBY", "JOIN_INPUT"]:
                 list_msg_obj = self.model.current_state.update(pygame.mouse.get_pos(), self.view.screen.get_width(), self.view.screen.get_height())
             #Il controller riceve la lista di messaggi parziali inviati dal "playing_state" e li deve completare con l'aggiunta dell'id del giocatore
                 if list_msg_obj:

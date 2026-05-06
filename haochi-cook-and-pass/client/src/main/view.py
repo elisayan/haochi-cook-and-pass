@@ -55,7 +55,7 @@ class GameView:
             lobby_view.draw(self.screen, model.game_code, model.ingr_id, model.current_state.ready_players, model.current_state.is_starting_player, self.font, self.code_font, model.current_state.circle, model.current_state.plates, model.current_state.start_btn, model.current_state.quit_btn)
         elif state == "JOIN_INPUT":
             self.screen.blit(self.general_bg, (0, 0))
-            join_view.draw(self.screen, self.title_font, self.font, model.current_state.rects,self.back_arrow_img, model.current_state.input_text)
+            join_view.draw(self.screen, self.title_font, self.font, model.current_state.rects, self.back_arrow_img, model.current_state.input_text)
         elif state == "PLAYING":
             model = model.current_state
             #si prende il prossimo elemento da dover inserire nel piatto
