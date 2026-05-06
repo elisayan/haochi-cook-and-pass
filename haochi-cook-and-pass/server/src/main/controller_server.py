@@ -6,11 +6,13 @@ from .room import Room
 room_manager = RoomManager()
 
 async def handle_start_game(websocket, current_player, data):
-    game_code = room_manager.generate_code(length=4)
+    room = room_manager.create_room() 
+    game_code = room.code
+    
     current_player.room_code = game_code
     #Aggiungere anche un ingrediente id per il giocatore iniziale 
     current_player.ingr_id = "carrot" #TO DO prendere id ingrediente del giocatore dal DB
-    room = Room(game_code) #si crea la room
+    
     room.add_player(current_player)
 
     response = json.dumps({
@@ -43,16 +45,18 @@ async def handle_join_room(websocket, current_player, data):
     #Si aggiunge un utente alla partita  
     game_code = data.get("code")
     room = room_manager.get_room(game_code)
+    print(room)
 
     if room is None:
         await websocket.send(json.dumps({"action": "ERROR", "message": "Room not found"}))
-        return
+    else:
+        room.add_player(current_player)
 
-    room = room_manager.get_room(game_code)
-    room.add_player(current_player)
-    
     ingr_possible_ids = ["lemon", "orange", "pepper", "rice", "shrimp", "carrot", "basil", "broccoli"]
     players_in_room = room.players
+
+    print("Giocatori nella room dopo l'aggiunta:", [player.id for player in players_in_room.values()])
+
     taken_ids = []
     for player in players_in_room:
         taken_ids.append(player.ingr_id)
