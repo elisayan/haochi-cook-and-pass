@@ -14,6 +14,7 @@ async def handle_start_game(websocket, current_player, data):
     current_player.ingr_id = "carrot" #TO DO prendere id ingrediente del giocatore dal DB
     
     room.add_player(current_player)
+    print(f"Giocatori nella room dopo la creazione:", [player.id for player in room.players.values()])
 
     response = json.dumps({
         "action": "ROOM_CREATED", 
@@ -49,37 +50,42 @@ async def handle_join_room(websocket, current_player, data):
 
     if room is None:
         await websocket.send(json.dumps({"action": "ERROR", "message": "Room not found"}))
-    else:
-        room.add_player(current_player)
+        return
+
+    room.add_player(current_player)
 
     ingr_possible_ids = ["lemon", "orange", "pepper", "rice", "shrimp", "carrot", "basil", "broccoli"]
-    players_in_room = room.players
+    players_in_room = room.players.values()
 
-    print("Giocatori nella room dopo l'aggiunta:", [player.id for player in players_in_room.values()])
+    print("Giocatori nella room dopo l'aggiunta:", [player.id for player in room.players.values()])
 
     taken_ids = []
     for player in players_in_room:
         taken_ids.append(player.ingr_id)
+
     #TO DO prendere da DB fin tanto che non se ne trova uno diverso 
     available_ids = list(set(ingr_possible_ids) - set(taken_ids))
     current_player.ingr_id = available_ids[0]  
+
+    print(f"Player {current_player.id} ha preso ingr_id: {current_player.ingr_id}")
+
     #Messaggio inviato al giocatore che ha preso parte ad una room per farlo passare a LobbyState
     current_player_response = json.dumps({
         "action": "CHANGE_MODEL_STATE", 
-        "current_state": "LOBBY",
+        "current_state": "AWAIT_JOIN",
         "ingr_id": current_player.ingr_id 
     }) 
     await websocket.send(current_player_response)
 
+    taken_ids = [p.ingr_id for p in room.players.values()]
 
-    taken_ids.insert(0, current_player.ingr_id)
-    host_id_socket = players_in_room[room.host_id].websocket 
-    response = json.dumps({
-        "action": "UPDATE_CURRENT_PLAYERS", 
-        "players_id": taken_ids,
-        "is_starting_player": True
-    })
-    await host_id_socket.send(response)
+    host_player = room.players.get(room.host_id)
+    if host_player:
+        await host_player.websocket.send(json.dumps({
+            "action": "UPDATE_CURRENT_PLAYERS", 
+            "players_id": taken_ids,
+            "is_starting_player": True
+        }))
 
 async def handle_quit_room(websocket, current_player, data):
     #TO DO Decommentare per avere corretto funzionamento
