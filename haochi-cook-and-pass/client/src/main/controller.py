@@ -69,11 +69,13 @@ class GameController:
         if data.get("action") == "ERROR":
             print("ERRORE DAL SERVER:", data.get("message"))
             self.model.current_state.error_message = data.get("message")
+
+
         #inviato quando si aggiunge un nuovo giocatore alla partita
         if data.get("action") == "UPDATE_CURRENT_PLAYERS":
             #if hasattr(self.model.current_state, "update_players_in_game"):
             self.model.current_state.update_players_in_game(data.get("players_id"), data.get("is_starting_player"))
         if data.get("action") == "CHANGE_MODEL_STATE":
             self.model.set_state(data.get("current_state"))#è "LOBBY" 
-            if self.model.current_state == "LOBBY":
-                self.model.ingr_id = data.get("ingr_id")   
+            #if self.model.current_state == "LOBBY":
+            self.model.ingr_id = data.get("ingr_id")   
