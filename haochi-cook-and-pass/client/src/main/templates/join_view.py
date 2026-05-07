@@ -1,4 +1,5 @@
 import pygame
+from pathlib import Path
 
 def draw(screen, title_font, font, rects, back_arrow_img, input_text, error_message):
     width, height = screen.get_size()
@@ -75,3 +76,43 @@ def draw(screen, title_font, font, rects, back_arrow_img, input_text, error_mess
                                              (rects["back_arrow"].width, 
                                               rects["back_arrow"].height))
     screen.blit(back_arrow, rects["back_arrow"])
+
+def draw_await_join(screen, title_font, font, ingr_id):
+    parent = Path(__file__).resolve().parent.parent / "images"
+    img_path = parent / f"{ingr_id}.png"
+    if not img_path.exists():
+        img_path = parent / f"{ingr_id}.PNG"
+
+    width, height = screen.get_size()
+    
+    # Titolo in alto
+    title = title_font.render("SHOW YOUR INGREDIENT TO THE HEAD CHEF!", True, (180, 100, 50))
+    title_rect = title.get_rect(center=(width // 2, height // 6))
+    screen.blit(title, title_rect)
+
+    try:
+        ingredient_img = pygame.image.load(str(img_path)).convert_alpha()
+        ingredient_img = pygame.transform.smoothscale(ingredient_img, (200, 200))
+        
+        # Immagine al centro
+        img_rect = ingredient_img.get_rect(center=(width // 2, height // 2))
+        screen.blit(ingredient_img, img_rect)
+        
+        # Nome dell'ingrediente sotto l'immagine
+        name_surf = font.render(ingr_id.upper(), True, (100, 70, 50))
+        name_rect = name_surf.get_rect(center=(width // 2, img_rect.bottom + 30))
+        screen.blit(name_surf, name_rect)
+        
+        # Messaggio di attesa in basso con animazione puntini
+        ticks = pygame.time.get_ticks()
+        dots = "." * ((ticks // 500) % 4)  # Cambia ogni 500ms: "", ".", "..", "..."
+        waiting_text = font.render(f"Waiting for the head chef to start the game{dots}", True, (150, 130, 110))
+        waiting_rect = waiting_text.get_rect(center=(width // 2, height - 80))
+        screen.blit(waiting_text, waiting_rect)
+        
+    except pygame.error:
+        print(f"Errore: Impossibile trovare l'immagine {img_path}")
+        # Mostra un messaggio di errore a schermo
+        error_text = font.render(f"Ingredient image not found: {ingr_id}", True, (200, 40, 40))
+        error_rect = error_text.get_rect(center=(width // 2, height // 2))
+        screen.blit(error_text, error_rect)
