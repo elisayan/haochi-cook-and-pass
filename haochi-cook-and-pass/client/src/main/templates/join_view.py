@@ -78,7 +78,7 @@ def draw(screen, title_font, font, rects, back_arrow_img, input_text, error_mess
     screen.blit(back_arrow, rects["back_arrow"])
 
 def draw_await_join(screen, title_font, font, ingr_id):
-    parent = Path(__file__).resolve().parent.parent / "images"
+    parent = Path(__file__).resolve().parent.parent / "images" / "ingredients"
     img_path = parent / f"{ingr_id}.png"
     if not img_path.exists():
         img_path = parent / f"{ingr_id}.PNG"

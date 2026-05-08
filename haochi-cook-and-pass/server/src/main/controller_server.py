@@ -54,7 +54,9 @@ async def handle_join_room(websocket, current_player, data):
 
     room.add_player(current_player)
 
-    ingr_possible_ids = ["lemon", "orange", "pepper", "rice", "shrimp", "carrot", "basil", "broccoli"]
+    #ingr_possible_ids = ["lemon", "orange", "pepper", "rice", "shrimp", "carrot", "basil", "broccoli"]
+    ingr_possible_ids = ["shrimp", "bread", "basil", "egg"]
+
     players_in_room = room.players.values()
 
     print("Giocatori nella room dopo l'aggiunta:", [player.id for player in room.players.values()])
