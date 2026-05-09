@@ -2,18 +2,21 @@ from .states.menu_state import MenuState
 from .states.lobby_state import LobbyState
 from .states.join_state import JoinState
 from .states.playing_state import PlayingState
+from .states.await_join_state import AwaitJoinState
 
 class GameModel:
     def __init__(self):
         self.game_code = ""
         self.player_id = ""
         self.ingr_id = ""
+        self.error_message = ""
         
         # Dizionario degli stati
         self.states = {
             "MENU": MenuState(),
             "LOBBY": LobbyState(self),
-            "JOIN_INPUT": JoinState(self), #todo
+            "JOIN_INPUT": JoinState(self),
+            "AWAIT_JOIN": AwaitJoinState(self),
             "PLAYING": PlayingState(self)
         }
         #to do rimpostare a MENU

@@ -13,15 +13,15 @@ class RoomManager:
 
     def create_room(self):
         code = self.generate_code()
-
         while code in self.rooms:
             code = self.generate_code()
-
-        self.rooms[code] = Room(code)
-
-        print(f"Room creata: {code}")
-        return code
-
+        
+        new_room = Room(code)
+        self.rooms[code] = new_room # Salvataggio interno
+        
+        print(f"Room creata e salvata: {code}")
+        return new_room
+    
     def get_room(self, code):
         return self.rooms.get(code)
 

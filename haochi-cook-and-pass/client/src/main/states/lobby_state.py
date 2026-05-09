@@ -75,7 +75,7 @@ class LobbyState(BaseState):
         col = 1
         for player_id in players_id:
             curr_pos = (starting_sx_pos + space_right * left, starting_height_pos + space_bottom * col)
-            player_id_obj = Player_Id(player_id + ".png", scale, curr_pos) 
+            player_id_obj = Player_Id(player_id + ".PNG", scale, curr_pos) 
             left += 1
             left = left % 2
             if left == 0:

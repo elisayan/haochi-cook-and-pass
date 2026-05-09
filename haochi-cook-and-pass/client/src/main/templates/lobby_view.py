@@ -68,13 +68,14 @@ def draw(screen, game_code, player_id, players_id, is_starting_player, font, cod
         _render_player_id(screen, "plate", plate_pos, (scale[0] + 30, scale[1] + 30))
         _render_player_id(screen, player_id, position, scale)
         
-        
 
 def _render_player_id(screen, img_name, position, scale, render_number = False, number = None):
-    full_name = img_name + ".png"
-    path = Path(__file__).resolve().parent.parent / "images"/ full_name
+    ingr_name = img_name
+    if not img_name.endswith(".PNG"):
+        ingr_name += ".PNG"
+    path = Path(__file__).resolve().parent.parent / "images"/ "ingredients"/ ingr_name
     id = pygame.image.load(str(path)).convert_alpha()
-    id = pygame.transform.scale(id, scale) 
+    id = pygame.transform.smoothscale(id, scale) 
     w, h = scale
     top_left_x = position[0] - w / 2
     top_left_y = position[1] - h / 2

@@ -4,6 +4,7 @@ import json
 import uuid
 
 from .connection_manager import manager
+from .controller_server import room_manager
 from .controller_server import ACTION_HANDLERS 
 
 async def register_client(websocket):
@@ -32,6 +33,7 @@ async def register_client(websocket):
     except websockets.exceptions.ConnectionClosed:
         pass
     finally:
+        room_manager.remove_player(player_id)
         manager.remove_player(websocket)
         print(f"Player {player_id} rimosso.")
 

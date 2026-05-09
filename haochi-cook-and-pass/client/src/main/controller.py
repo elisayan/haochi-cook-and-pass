@@ -34,7 +34,7 @@ class GameController:
                 #    self.model.current_state.update_players_in_game(["pepper", "rice", "shrimp"], True)
 
             #nel while loop del gioco se lo stato è PLAYING (la partita è in corso) ad ogni ciclo si deve aggiornare lo stato del gioco    
-            if (self.model.current_state_key == "PLAYING" or self.model.current_state_key == "LOBBY"):
+            if self.model.current_state_key in ["PLAYING", "LOBBY", "JOIN_INPUT"]:
                 list_msg_obj = self.model.current_state.update(pygame.mouse.get_pos(), self.view.screen.get_width(), self.view.screen.get_height())
             #Il controller riceve la lista di messaggi parziali inviati dal "playing_state" e li deve completare con l'aggiunta dell'id del giocatore
                 if list_msg_obj:
@@ -66,11 +66,16 @@ class GameController:
             #-lista dei giocatori (loro id)
             #-si dice se il giocatore corrente è quello che ha iniziato la partita  
         #    self.model.current_state.update_players_in_game(data.get("players_id"), data.get("is_starting_player"))
+        if data.get("action") == "ERROR":
+            print("ERRORE DAL SERVER:", data.get("message"))
+            self.model.current_state.error_message = data.get("message")
+
+
         #inviato quando si aggiunge un nuovo giocatore alla partita
         if data.get("action") == "UPDATE_CURRENT_PLAYERS":
             #if hasattr(self.model.current_state, "update_players_in_game"):
             self.model.current_state.update_players_in_game(data.get("players_id"), data.get("is_starting_player"))
         if data.get("action") == "CHANGE_MODEL_STATE":
             self.model.set_state(data.get("current_state"))#è "LOBBY" 
-            if self.model.current_state == "LOBBY":
-                self.model.ingr_id = data.get("ingr_id")   
+            #if self.model.current_state == "LOBBY":
+            self.model.ingr_id = data.get("ingr_id")   
