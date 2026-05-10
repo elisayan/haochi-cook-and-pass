@@ -15,7 +15,7 @@ class LobbyState(BaseState):
         self.is_starting_player = True
         self.room_code = model.game_code
         self.plates = [] #lista di Element che rappresentano i piatti
-        self.circle = ((500, 260), 200) #cerchio su cui si trovano i piatti (center, radius)
+        self.circle = ((740, 280), 200) #cerchio su cui si trovano i piatti (center, radius)
         self.playing_turn = {} #giro della partita #piatto e player_id
         self.quit_btn = pygame.Rect(80, 500, 100, 50)
         self.start_btn = pygame.Rect(620, 500, 100, 50)
@@ -27,7 +27,8 @@ class LobbyState(BaseState):
         #TO DO Con la send_queue si può mandare al server direttamente il messaggio di start e stop
 # Inoltre si ha anche il model allora anche l'ordine del giro si potrebbe mandare direttamente qui 
         if event.type == pygame.QUIT:# TO DO mandare messaggio che il giocatore lascia la partita 
-            send_queue.put(json.dumps({"action": "QUIT_ROOM"}))     
+            send_queue.put(json.dumps({"action": "QUIT_ROOM"}))
+            model.switch_to("MENU")
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if self.start_btn.collidepoint(event.pos):
                 #Quando viene cliccato si verifica che tutti gli id siano stati sistemati
@@ -67,19 +68,22 @@ class LobbyState(BaseState):
         #self.ready_players = players_id #non sono più lista di id (stringhe nomi ingredienti) ma oggetti Player_Id
         scale = (60, 60)
         #Definizione della posizione di ogni id dei giocatori in attesa
-        starting_sx_pos = 80
-        starting_height_pos = 70
-        space_right = 100
-        space_bottom = 100
-        left = 0
-        col = 1
-        for player_id in players_id:
-            curr_pos = (starting_sx_pos + space_right * left, starting_height_pos + space_bottom * col)
+        starting_sx_pos = 90
+        starting_height_pos = 280
+
+        space_right = 80
+        space_bottom = 80
+
+        max_per_row = 4  # Massimo 4 player per riga (4 colonne)
+        row = 0
+        col = 0
+
+        for index, player_id in enumerate(players_id):
+            col = index % max_per_row
+            row = index // max_per_row
+            
+            curr_pos = (starting_sx_pos + space_right * col, starting_height_pos + space_bottom * row)
             player_id_obj = Player_Id(player_id + ".PNG", scale, curr_pos) 
-            left += 1
-            left = left % 2
-            if left == 0:
-                col += 1
             self.ready_players.append(player_id_obj)    
 
         self.is_starting_player = is_starting_player
@@ -122,7 +126,7 @@ class LobbyState(BaseState):
 
     def _update_plates(self):
         plates_pos = self._get_plates_positions(self.circle[0], self.circle[1], len(self.ready_players))
-        plate_scale = 100
+        plate_scale = 90
         for index, pos in enumerate(plates_pos):
             plate = Element("plate.png", (plate_scale, plate_scale), pos)#(pos[0] - plate_scale/2, pos[1] - plate_scale/2)
             plate.set_plate()
@@ -140,8 +144,8 @@ class LobbyState(BaseState):
         for i in range(num_circles):
             angle = (2 * math.pi / num_circles) * i - (math.pi / 2)
             
-            x = center[0] + big_radius * math.cos(angle)
-            y = center[1] + big_radius * math.sin(angle)
+            x = int(center[0] + big_radius * math.cos(angle))
+            y = int(center[1] + big_radius * math.sin(angle))
             
             positions.append((x, y))
         return positions           
