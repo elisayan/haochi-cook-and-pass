@@ -8,7 +8,7 @@ class GameView:
         self.screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
         self.font = pygame.font.SysFont("Arial", 24)
         self.title_font = pygame.font.SysFont("Comic Sans MS", 40, bold=True)
-        self.code_font = pygame.font.SysFont("Arial", 48, bold=True)
+        self.code_font = pygame.font.SysFont("Arial", 38, bold=True)
         self.base_path = Path(__file__).resolve().parent
 
         #path immagini 
