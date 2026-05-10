@@ -25,7 +25,7 @@ class LobbyState(BaseState):
 
     def handle_input(self, event, send_queue, model):
         #TO DO Con la send_queue si può mandare al server direttamente il messaggio di start e stop
-# Inoltre si ha anche il model allora anche l'ordine del giro si potrebbe mandare direttamente qui 
+        # Inoltre si ha anche il model allora anche l'ordine del giro si potrebbe mandare direttamente qui 
         if event.type == pygame.QUIT:# TO DO mandare messaggio che il giocatore lascia la partita 
             send_queue.put(json.dumps({"action": "QUIT_ROOM"}))
             model.switch_to("MENU")
@@ -43,10 +43,12 @@ class LobbyState(BaseState):
                     send_queue.put(json.dumps({
                         "action": "START_PLAYING",
                         "players_position": order_players
-                    }))    
+                    }))
+                    model.switch_to("PLAYING")    
             if self.quit_btn.collidepoint(event.pos):       
                 print("Si deve dire al server che il giocatore vuole uscire dalla partita")
-                send_queue.put(json.dumps({"action": "QUIT_ROOM"})) 
+                send_queue.put(json.dumps({"action": "QUIT_ROOM"}))
+                model.switch_to("MENU")
             self.handle_pression(event.pos)
         elif event.type == pygame.MOUSEBUTTONUP:
             self.handle_release()

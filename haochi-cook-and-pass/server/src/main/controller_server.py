@@ -92,24 +92,33 @@ async def handle_join_room(websocket, current_player, data):
 async def handle_quit_room(websocket, current_player, data):
     #TO DO Decommentare per avere corretto funzionamento
     room = room_manager.get_room(current_player.room_code)
-    room.remove_player(current_player)
+    room.remove_player(current_player.id)
+
     players_in_room = room.players
+
+    print("Giocatori nella room dopo la rimozione:", [player.id for player in room.players.values()])
+
     taken_ids = []
     for player in players_in_room:
         taken_ids.append(player.ingr_id)
-    host_id_socket = players_in_room[room.host_id].websocket 
-    response = json.dumps({
-        "action": "UPDATE_CURRENT_PLAYERS", 
-        "players_id": taken_ids,
-        "is_starting_player": True
-    })
-    await host_id_socket.send(response)
 
-    current_player_response = json.dumps({
-        "action": "CHANGE_MODEL_STATE", 
-        "current_state": "MENU",
-    }) 
-    await websocket.send(current_player_response)
+    if room.host_id is not None and room.host_id in players_in_room:
+        host_id_socket = players_in_room[room.host_id].websocket
+        response = json.dumps({
+            "action": "UPDATE_CURRENT_PLAYERS", 
+            "players_id": taken_ids,
+            "is_starting_player": True
+        })
+        await host_id_socket.send(response)
+
+        current_player_response = json.dumps({
+            "action": "CHANGE_MODEL_STATE", 
+            "current_state": "MENU",
+        }) 
+        await websocket.send(current_player_response)
+    else:
+        print(f"Room has no host anymore or host already disconnected.")
+
 
 #Quando il giocatore che ha avviato la partita clicca START nella LOBBY:
 # - Si setta la posizione dei giocatori a quella ricevuta dal messaggio
