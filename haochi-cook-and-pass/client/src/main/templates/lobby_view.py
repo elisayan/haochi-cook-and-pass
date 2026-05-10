@@ -1,97 +1,117 @@
-"""pagina di attesa di un segnale Start dal server"""
 import pygame
 import math
 from pathlib import Path
 
-def draw(screen, game_code, player_id, players_id, is_starting_player, font, code_font, circle, plates, start_btn, quit_btn):
-    screen.fill((255, 255, 102))
-    width = screen.get_width()
-    height = screen.get_height()
-    label = font.render("Room Code:", True, (0, 0, 0))
-    code_text = code_font.render(game_code, True, (0, 0, 255))
-    screen.blit(label, (80, 30))
-    screen.blit(code_text, (80, 55))
-    quit_btn = pygame.Rect(80, 500, 100, 50)
-    pygame.draw.rect(screen, (255, 165, 0), quit_btn)
-    text = font.render("QUIT", True, (255, 255, 255))
-    screen.blit(text, (quit_btn.x + 25, quit_btn.y + 10))
+C_BG = (255, 248, 240)      # Sfondo card/riquadri
+C_BORDER = (255, 180, 100)  # Arancio bordi
+C_TITLE = (180, 100, 30)    # Marrone titoli
+C_SUBTITLE = (150, 130, 110)# Grigio/Marrone testi secondari
+
+def draw(screen, game_code, player_id, players_id, is_starting_player, font, title_font, circle, plates, start_btn, quit_btn):
+    screen.fill((245, 235, 225)) 
+    
+    width, height = screen.get_size()
+
+    main_title = title_font.render("KITCHEN CREATED", True, C_TITLE)
+    title_rect = main_title.get_rect(topleft=(40, 20))
+    screen.blit(main_title, title_rect)
+    
+    code_card = pygame.Rect(40, 120, 180, 80)
+    pygame.draw.rect(screen, C_BG, code_card, border_radius=12)
+    pygame.draw.rect(screen, C_BORDER, code_card, 2, border_radius=12)
+    
+    label = font.render("CODE:", True, C_SUBTITLE)
+    code_text = title_font.render(game_code, True, (100, 100, 200)) 
+    screen.blit(label, (code_card.x + 15, code_card.y + 5))
+    screen.blit(code_text, (code_card.x + 15, code_card.y + 30))
+
+    player_list_card = pygame.Rect(40, 220, 360, 180)
+    pygame.draw.rect(screen, C_BG, player_list_card, border_radius=15)
+    pygame.draw.rect(screen, C_BORDER, player_list_card, 2, border_radius=15)
+
+    player_label = font.render("CHEFS LIST", True, C_SUBTITLE)
+    screen.blit(player_label, (player_list_card.x + 15, player_list_card.y + 5))
+
+    suggestion_label = font.render("Share your kitchen code with other chefs!", True, C_SUBTITLE)
+    screen.blit(suggestion_label, (40, 80))
+
     if is_starting_player:
-        #start_btn = pygame.Rect(620, 500, 100, 50)
-        pygame.draw.rect(screen, (0, 255, 0), start_btn)
-        text = font.render("START", True, (255, 255, 255))
-        screen.blit(text, (start_btn.x + 20, start_btn.y + 10))
-        #center = (width/2 + 100, height/2 - 40)
-        #radius = 200
         center = circle[0]
         radius = circle[1]
-        pygame.draw.circle(screen, (0, 0, 0), center, radius, 2)
-        """positions = _get_circle_positions(center, radius, num_circles = 8)
-        for pos in positions:
-            #pygame.draw.circle(screen, (0, 0, 0), pos, 30, 2)
-            plate_scale = 100
-            _render_player_id(screen, "plate", (pos[0] - plate_scale/2, pos[1] - plate_scale/2), (plate_scale, plate_scale))
-        """
-        i = 0
-        for plate in plates:
-            _render_player_id(screen, "plate", plate.position, plate.dimension, render_number = True, number = i)
-            i += 1
-            """print("posizione:", plate.position)
-            print("dimensione:",plate.dimension)
-            print()"""
-        """starting_sx_pos = 50
-        starting_height = 30
-        scale = (60, 60)
-        space_right = 100
-        space_bottom = 100
-        left = 0
-        col = 1
-        for player_id in players_id:
-            curr_pos = (starting_sx_pos + space_right * left, starting_height + space_bottom * col)
-            _render_player_id(screen, player_id, curr_pos, scale)
-            left += 1
-            left = left % 2
-            if left == 0:
-                col += 1"""
-        for player_id in players_id:
-            _render_player_id(screen, player_id.name, player_id.position, player_id.dimension)
-    else:   
+        right_margin = 80
+        #center_x = width - radius - right_margin
+        #center_y = height // 2
+        #center = (center_x, center_y)
+
+        pygame.draw.circle(screen, (255, 255, 255), center, radius)
+        draw_dashed_circle(screen, C_BORDER, center, radius, width=3, dash_length=8)
+        
+        # Rendering Piatti e Giocatori
+        for i, plate in enumerate(plates):
+            _render_player_id(screen, "plate", plate.position, plate.dimension, render_number=True, number=i)
+        
+        for player in players_id:
+            _render_player_id(screen, player.name, player.position, player.dimension)
+            
+        #start_btn_rect = pygame.Rect(width - 180, height - 80, 140, 50)
+        pygame.draw.rect(screen, (100, 200, 100), start_btn, border_radius=20)
+        btn_txt = font.render("START", True, (255, 255, 255))
+        screen.blit(btn_txt, btn_txt.get_rect(center=start_btn.center))
+        
+    #else:   
         #Schermata statica di sola attesa
         #quit_btn = pygame.Rect(80, 500, 100, 50)
-        pygame.draw.rect(screen, (255, 165, 0), quit_btn)
-        text = font.render("QUIT", True, (255, 255, 255))
-        screen.blit(text, (quit_btn.x + 25, quit_btn.y + 10))
-        scale = (100, 100)
+        #pygame.draw.rect(screen, (255, 165, 0), quit_btn)
+        #text = font.render("QUIT", True, (255, 255, 255))
+        #screen.blit(text, (quit_btn.x + 25, quit_btn.y + 10))
+        #scale = (100, 100)
         #position = (width/2 - scale[0]/2, height/2 - scale[1]/2)
         #plate_pos = (position[0] - 15, position[1] - 15)
-        position = (width/2, height/2)
-        plate_pos = (position[0], position[1])
-        _render_player_id(screen, "plate", plate_pos, (scale[0] + 30, scale[1] + 30))
-        _render_player_id(screen, player_id, position, scale)
-        
+        #position = (width/2, height/2)
+        #plate_pos = (position[0], position[1])
+        #_render_player_id(screen, "plate", plate_pos, (scale[0] + 30, scale[1] + 30))
+        #_render_player_id(screen, player_id, position, scale)
 
-def _render_player_id(screen, img_name, position, scale, render_number = False, number = None):
-    ingr_name = img_name
-    if not img_name.endswith(".PNG"):
-        ingr_name += ".PNG"
-    path = Path(__file__).resolve().parent.parent / "images"/ "ingredients"/ ingr_name
-    id = pygame.image.load(str(path)).convert_alpha()
-    id = pygame.transform.smoothscale(id, scale) 
-    w, h = scale
-    top_left_x = position[0] - w / 2
-    top_left_y = position[1] - h / 2
-    screen.blit(id, (top_left_x, top_left_y)) 
-    if render_number:
-        font = pygame.font.SysFont("Verdana", 48, bold=True)
-        score_surface = font.render(str(number), True, (0, 0, 0)) 
-        screen.blit(score_surface, (top_left_x, top_left_y))         
+    #quit_rect = pygame.Rect(40, height - 80, 120, 50)
+    pygame.draw.rect(screen, (255, 120, 100), quit_btn, border_radius=20)
+    quit_txt = font.render("EXIT", True, (255, 255, 255))
+    screen.blit(quit_txt, quit_txt.get_rect(center=quit_btn.center))
 
-"""def _get_circle_positions(center, big_radius, num_circles):
-    positions = []
-    for i in range(num_circles):
-        angle = (2 * math.pi / num_circles) * i - (math.pi / 2)
+def draw_dashed_circle(surface, color, center, radius, width=2, dash_length=10):
+    """Disegna un cerchio tratteggiato calcolando i punti sulla circonferenza."""
+    import math
+    circumference = 2 * math.pi * radius
+    num_dashes = int(circumference / (dash_length * 2))
+    
+    for i in range(num_dashes):
+        # Angolo di inizio e fine per ogni tratto (in radianti)
+        start_angle = (i * 2 * math.pi / num_dashes)
+        end_angle = start_angle + (dash_length / radius)
         
-        x = center[0] + big_radius * math.cos(angle)
-        y = center[1] + big_radius * math.sin(angle)
+        # Disegniamo un arco per ogni tratto
+        pygame.draw.arc(surface, color, 
+                        (center[0]-radius, center[1]-radius, radius*2, radius*2), 
+                        start_angle, end_angle, width)
+
+def _render_player_id(screen, img_name, position, scale, render_number=False, number=None):
+    # Correzione estensione per evitare duplicati .PNG.PNG
+    clean_name = img_name.replace(".PNG", "").replace(".png", "")
+    full_name = f"{clean_name}.PNG"
+    
+    path = Path(__file__).resolve().parent.parent / "images" / "ingredients" / full_name
+    
+    try:
+        img = pygame.image.load(str(path)).convert_alpha()
+        img = pygame.transform.smoothscale(img, scale)
+        rect = img.get_rect(center=position)
+        screen.blit(img, rect)
         
-        positions.append((x, y))
-    return positions"""
+        if render_number:
+            num_font = pygame.font.SysFont("Verdana", 24, bold=True)
+            # Piccolo cerchio per il numero del piatto
+            pygame.draw.circle(screen, (255, 255, 255), (rect.centerx, rect.top), 15)
+            pygame.draw.circle(screen, C_BORDER, (rect.centerx, rect.top), 15, 2)
+            num_surf = num_font.render(str(number), True, (60, 40, 30))
+            screen.blit(num_surf, num_surf.get_rect(center=(rect.centerx, rect.top)))
+    except:
+        pass # Gestione errore silenziosa per brevità

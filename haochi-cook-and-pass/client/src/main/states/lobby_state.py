@@ -17,8 +17,8 @@ class LobbyState(BaseState):
         self.plates = [] #lista di Element che rappresentano i piatti
         self.circle = ((740, 280), 200) #cerchio su cui si trovano i piatti (center, radius)
         self.playing_turn = {} #giro della partita #piatto e player_id
-        self.quit_btn = pygame.Rect(80, 500, 100, 50)
-        self.start_btn = pygame.Rect(620, 500, 100, 50)
+        self.quit_btn = pygame.Rect(40, 500, 120, 50)
+        self.start_btn = pygame.Rect(820, 500, 140, 50)
         #TO DO da rimuovere perchè usato solo per testing
         self.update_players_in_game(["orange", "pepper", "rice", "shrimp"], self.is_starting_player) #TO DO da rimuovere, usato solo per fare delle prove
         
