@@ -38,7 +38,7 @@ def draw(screen, game_code, player_id, players_id, is_starting_player, font, tit
     if is_starting_player:
         center = circle[0]
         radius = circle[1]
-        right_margin = 80
+        #right_margin = 80
         #center_x = width - radius - right_margin
         #center_y = height // 2
         #center = (center_x, center_y)
@@ -53,8 +53,12 @@ def draw(screen, game_code, player_id, players_id, is_starting_player, font, tit
         for player in players_id:
             _render_player_id(screen, player.name, player.position, player.dimension)
             
-        #start_btn_rect = pygame.Rect(width - 180, height - 80, 140, 50)
-        pygame.draw.rect(screen, (100, 200, 100), start_btn, border_radius=20)
+        is_ready = len(players_id) >= 2 and len(plates) > 0 # o altra logica simile
+    
+        # Colore: Verde se pronto, Grigio se disabilitato
+        start_color = (100, 200, 100) if is_ready else (180, 180, 180)
+    
+        pygame.draw.rect(screen, start_color, start_btn, border_radius=20)
         btn_txt = font.render("START", True, (255, 255, 255))
         screen.blit(btn_txt, btn_txt.get_rect(center=start_btn.center))
         

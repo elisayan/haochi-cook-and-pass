@@ -32,10 +32,10 @@ class LobbyState(BaseState):
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if self.start_btn.collidepoint(event.pos):
                 #Quando viene cliccato si verifica che tutti gli id siano stati sistemati
-                print(len(self.ready_players))
-                print(len(self.playing_turn))
+                print("Giocatori in attesa:", len(self.ready_players))
+                print("Giocatori pronti per avviare:", len(self.playing_turn))
                 if len(self.playing_turn) == len(self.ready_players) and len(self.playing_turn) >= 2:
-                    print("Si invia messaggio al server")
+                    print("Si comunica al server per iniziare la partita")
                     order_players = []
                     for i in range(max(self.playing_turn), -1, -1):
                         order_players.append(self.playing_turn[i].name)
@@ -44,7 +44,11 @@ class LobbyState(BaseState):
                         "action": "START_PLAYING",
                         "players_position": order_players
                     }))
-                    model.switch_to("PLAYING")    
+                    model.switch_to("PLAYING") 
+                elif len(self.ready_players) < 2:
+                    print("Non ci sono abbastanza giocatori per avviare la partita")
+                else:
+                    print("Non tutti i giocatori sono pronti per avviare la partita")  
             if self.quit_btn.collidepoint(event.pos):       
                 print("Si deve dire al server che il giocatore vuole uscire dalla partita")
                 send_queue.put(json.dumps({"action": "QUIT_ROOM"}))

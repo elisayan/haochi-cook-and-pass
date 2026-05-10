@@ -78,5 +78,6 @@ class GameController:
         if data.get("action") == "CHANGE_MODEL_STATE":
             self.model.set_state(data.get("current_state"))#è "LOBBY" 
             print("MODELLO CAMBIATO IN", data.get("current_state"))
-            if self.model.current_state == "LOBBY" or self.model.current_state == "AWAIT_JOIN":
-                self.model.ingr_id = data.get("ingr_id")   
+            #if self.model.current_state == "LOBBY" or self.model.current_state == "AWAIT_JOIN":
+            #if data.get("incr_id") is not None:
+            self.model.ingr_id = data.get("ingr_id")   

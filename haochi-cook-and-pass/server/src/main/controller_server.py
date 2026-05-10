@@ -90,6 +90,8 @@ async def handle_join_room(websocket, current_player, data):
         }))
 
 async def handle_quit_room(websocket, current_player, data):
+    # se il giocatore non ha ancora avviato la partita, si rimuove dalla room e si aggiorna la lobby per gli altri giocatori
+    
     #TO DO Decommentare per avere corretto funzionamento
     room = room_manager.get_room(current_player.room_code)
     room.remove_player(current_player.id)
