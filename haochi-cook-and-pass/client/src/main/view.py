@@ -58,7 +58,7 @@ class GameView:
             join_view.draw(self.screen, self.title_font, self.font, model.current_state.rects, self.back_arrow_img, model.current_state.input_text, model.current_state.error_message)
         elif state == "AWAIT_JOIN":
             self.screen.blit(self.general_bg, (0, 0))
-            join_view.draw_await_join(self.screen, self.title_font, self.font, model.ingr_id)
+            join_view.draw_await_join(self.screen, self.title_font, self.font, model.current_state.rects, model.ingr_id, self.back_arrow_img)
         elif state == "PLAYING":
             model = model.current_state
             #si prende il prossimo elemento da dover inserire nel piatto

@@ -1,4 +1,5 @@
 import pygame
+import math
 from pathlib import Path
 
 def draw(screen, title_font, font, rects, back_arrow_img, input_text, error_message):
@@ -77,42 +78,63 @@ def draw(screen, title_font, font, rects, back_arrow_img, input_text, error_mess
                                               rects["back_arrow"].height))
     screen.blit(back_arrow, rects["back_arrow"])
 
-def draw_await_join(screen, title_font, font, ingr_id):
+def draw_await_join(screen, title_font, font, rects, ingr_id, back_arrow_img):
+    #screen.fill((245, 235, 225)) 
+
     parent = Path(__file__).resolve().parent.parent / "images" / "ingredients"
     img_path = parent / f"{ingr_id}.png"
     if not img_path.exists():
         img_path = parent / f"{ingr_id}.PNG"
 
     width, height = screen.get_size()
+    ticks = pygame.time.get_ticks()
+
+    # 1. Titolo
+    title_line1 = title_font.render("SHOW YOUR INGREDIENT", True, (180, 100, 50))
+    title_line2 = title_font.render("TO THE HEAD CHEF!", True, (180, 100, 50))
     
-    # Titolo in alto
-    title = title_font.render("SHOW YOUR INGREDIENT TO THE HEAD CHEF!", True, (180, 100, 50))
-    title_rect = title.get_rect(center=(width // 2, height // 6))
-    screen.blit(title, title_rect)
+    # Spaziatura tra le righe
+    line_spacing = 5
+    title_height = title_line1.get_height() + title_line2.get_height() + line_spacing
+    title_y = height // 6
+    
+    title1_rect = title_line1.get_rect(center=(width // 2, title_y))
+    title2_rect = title_line2.get_rect(center=(width // 2, title_y + title_line1.get_height() + line_spacing))
+    
+    screen.blit(title_line1, title1_rect)
+    screen.blit(title_line2, title2_rect)
+
+    back_arrow = pygame.transform.smoothscale(back_arrow_img, 
+                                             (rects["back_arrow"].width, 
+                                              rects["back_arrow"].height))
+    screen.blit(back_arrow, rects["back_arrow"])
 
     try:
         ingredient_img = pygame.image.load(str(img_path)).convert_alpha()
-        ingredient_img = pygame.transform.smoothscale(ingredient_img, (200, 200))
+        ingredient_img = pygame.transform.smoothscale(ingredient_img, (120, 120))
         
-        # Immagine al centro
-        img_rect = ingredient_img.get_rect(center=(width // 2, height // 2))
+        offset_y = math.sin(ticks * 0.005) * 10 
+        img_rect = ingredient_img.get_rect(center=(width // 2, (height // 2) + offset_y))
+        
+        # 4. Aura intorno all'ingrediente (cerchio semitrasparente)
+        aura_surface = pygame.Surface((180, 180), pygame.SRCALPHA)
+        pygame.draw.circle(aura_surface, (255, 220, 180, 100), (90, 90), 90)
+        screen.blit(aura_surface, (img_rect.centerx - 90, img_rect.centery - 90))
         screen.blit(ingredient_img, img_rect)
         
-        # Nome dell'ingrediente sotto l'immagine
+        # 5. Nome ingrediente
         name_surf = font.render(ingr_id.upper(), True, (100, 70, 50))
         name_rect = name_surf.get_rect(center=(width // 2, img_rect.bottom + 30))
         screen.blit(name_surf, name_rect)
         
-        # Messaggio di attesa in basso con animazione puntini
-        ticks = pygame.time.get_ticks()
-        dots = "." * ((ticks // 500) % 4)  # Cambia ogni 500ms: "", ".", "..", "..."
-        waiting_text = font.render(f"Waiting for the head chef to start the game{dots}", True, (150, 130, 110))
-        waiting_rect = waiting_text.get_rect(center=(width // 2, height - 80))
+        # 6. Messaggio di attesa animato
+        dots = "." * ((ticks // 500) % 4)
+        waiting_text = font.render(f"Waiting for the head chef{dots}", True, (150, 130, 110))
+        waiting_rect = waiting_text.get_rect(center=(width // 2, height - 120))
         screen.blit(waiting_text, waiting_rect)
         
     except pygame.error:
         print(f"Errore: Impossibile trovare l'immagine {img_path}")
-        # Mostra un messaggio di errore a schermo
         error_text = font.render(f"Ingredient image not found: {ingr_id}", True, (200, 40, 40))
         error_rect = error_text.get_rect(center=(width // 2, height // 2))
         screen.blit(error_text, error_rect)
