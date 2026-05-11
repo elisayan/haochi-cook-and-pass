@@ -17,5 +17,6 @@ class AwaitJoinState(BaseState):
                 model.switch_to("MENU")
                 send_queue.put(json.dumps({"action": "QUIT_ROOM"}))
 
-    
+    def update(self, mouse_pos, screen_width, screen_height):
+        pass
     

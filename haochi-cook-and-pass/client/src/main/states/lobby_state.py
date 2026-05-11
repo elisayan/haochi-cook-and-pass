@@ -50,7 +50,7 @@ class LobbyState(BaseState):
                 else:
                     print("Non tutti i giocatori sono pronti per avviare la partita")  
             if self.quit_btn.collidepoint(event.pos):       
-                print("Si deve dire al server che il giocatore vuole uscire dalla partita")
+                print("Host sta chiudendo la stanza")
                 send_queue.put(json.dumps({"action": "QUIT_ROOM"}))
                 model.switch_to("MENU")
             self.handle_pression(event.pos)
