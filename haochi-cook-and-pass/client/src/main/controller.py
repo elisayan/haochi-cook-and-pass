@@ -25,7 +25,6 @@ class GameController:
                     
                 # Lo stato corrente decide cosa fare con i click/tasti
                 self.model.current_state.handle_input(event, send_queue, self.model)
-
                 #i += 1
                 #if i < 200:
                 #    print(i)
@@ -34,7 +33,7 @@ class GameController:
                 #    self.model.current_state.update_players_in_game(["pepper", "rice", "shrimp"], True)
 
             #nel while loop del gioco se lo stato è PLAYING (la partita è in corso) ad ogni ciclo si deve aggiornare lo stato del gioco    
-            if self.model.current_state_key in ["PLAYING", "LOBBY", "JOIN_INPUT"]:
+            if self.model.current_state_key in ["PLAYING", "LOBBY", "JOIN_INPUT", "AWAIT_JOIN"]:
                 list_msg_obj = self.model.current_state.update(pygame.mouse.get_pos(), self.view.screen.get_width(), self.view.screen.get_height())
             #Il controller riceve la lista di messaggi parziali inviati dal "playing_state" e li deve completare con l'aggiunta dell'id del giocatore
                 if list_msg_obj:
@@ -53,12 +52,12 @@ class GameController:
             self.model.game_code = data.get("code")
             self.model.set_state("LOBBY")
             #gestito dentro a controller_server e viene inviato al target_player quando il server riceve il messaggio 
-        if data.get("action") == "NEW_INGREDIENT":
+        elif data.get("action") == "NEW_INGREDIENT":
             self.model.current_state.add_new_ingredient(data.get("ingr_name"), data.get("dimension"), data.get("score"), data.get("direction"))
-        if data.get("action") == "STARTING_INGREDIENTS":
+        elif data.get("action") == "STARTING_INGREDIENTS":
             #lista di tuple(nome, dimensione, score)
             self.model.current_state.add_starting_ingredients(data.get("ingredients"))       
-        if data.get("action") == "STARTING_PLATES":
+        elif data.get("action") == "STARTING_PLATES":
             #lista di tuple (nome, dimensione, score)
             self.model.current_state.add_starting_plates(data.get("plates"))
         #messaggio inviato per la lobby (sala di attesa)      
@@ -66,16 +65,20 @@ class GameController:
             #-lista dei giocatori (loro id)
             #-si dice se il giocatore corrente è quello che ha iniziato la partita  
         #    self.model.current_state.update_players_in_game(data.get("players_id"), data.get("is_starting_player"))
-        if data.get("action") == "ERROR":
+        elif data.get("action") == "ERROR":
             print("ERRORE DAL SERVER:", data.get("message"))
             self.model.current_state.error_message = data.get("message")
-
+        elif data.get("action") == "ROOM_CLOSED":
+            print("LA STANZA È STATA CHIUSA DALL'HOST")
+            self.model.set_state("MENU")
 
         #inviato quando si aggiunge un nuovo giocatore alla partita
-        if data.get("action") == "UPDATE_CURRENT_PLAYERS":
-            #if hasattr(self.model.current_state, "update_players_in_game"):
-            self.model.current_state.update_players_in_game(data.get("players_id"), data.get("is_starting_player"))
-        if data.get("action") == "CHANGE_MODEL_STATE":
+        elif data.get("action") == "UPDATE_CURRENT_PLAYERS":
+            if hasattr(self.model.current_state, "update_players_in_game"):
+                self.model.current_state.update_players_in_game(data.get("players_id"), data.get("is_starting_player"))
+            else:
+                print(f"Messaggio ricevuto ma lo stato attuale non lo gestisce.")
+        elif data.get("action") == "CHANGE_MODEL_STATE":
             self.model.set_state(data.get("current_state"))#è "LOBBY" 
             print("MODELLO CAMBIATO IN", data.get("current_state"))
             #if self.model.current_state == "LOBBY" or self.model.current_state == "AWAIT_JOIN":
