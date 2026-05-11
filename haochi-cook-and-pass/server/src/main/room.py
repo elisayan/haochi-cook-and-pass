@@ -31,19 +31,34 @@ class Room:
         return True
 
     def remove_player(self, player_id):
-        removed_player_position = self.players[player_id].position
-        if player_id in self.players:
-            del self.players[player_id]
+        #removed_player_position = self.players[player_id].position
+        #if player_id in self.players:
+        #    del self.players[player_id]
             
         # se era host, assegna nuovo host (il primo rimasto) o None se vuota
-        if player_id == self.host_id and self.players:
-            self.host_id = next(iter(self.players.keys()))
-        elif not self.players:
-            self.host_id = None
+        #if player_id == self.host_id and self.players:
+        #    self.host_id = next(iter(self.players.keys()))
+        #elif not self.players:
+        #    self.host_id = None
 
         #si aggiorna il giro dopo che uno dei giocatori è stato rimosso
-        self._update_players_position_in_play(removed_player_position)
-        self._update_state()
+        #self._update_players_position_in_play(removed_player_position)
+        #self._update_state()
+
+        player_to_remove = self.players.get(player_id)
+        if not player_to_remove:
+            return
+        
+        removed_player_position = player_to_remove.position
+        del self.players[player_id]
+        if removed_player_position is not None:
+            self._update_players_position_in_play(removed_player_position)
+        
+        if player_id == self.host_id:
+            if self.players:
+                self.host_id = list(self.players.keys())[0]
+            else:
+                self.host_id = None
 
     def _update_state(self): #aggiorna lo stato della stanza in base ai giocatori
         if self.state in [RoomState.IN_GAME, RoomState.OVER]:
@@ -77,8 +92,8 @@ class Room:
         list_players = list(self.players.values())
         for player in list_players:
             #tutti i giocatori succesivi alla posizione del giocatore rimosso si spostano indietro di una posizione
-            if player.position > removed_player_position:
-                player.position = player.position - 1
+            if player.position is not None and player.position > removed_player_position:
+                player.position -= 1
 
 
     def get_near_player(self, current_player, side): #side è LEFT o RIGHT
