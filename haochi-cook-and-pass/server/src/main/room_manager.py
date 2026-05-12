@@ -1,7 +1,5 @@
 import random
 import string
-import asyncio
-
 from .room import Room
 
 class RoomManager:
@@ -17,24 +15,32 @@ class RoomManager:
             code = self.generate_code()
         
         new_room = Room(code)
-        self.rooms[code] = new_room # Salvataggio interno
-        
-        print(f"Room creata e salvata: {code}")
+        self.rooms[code] = new_room
         return new_room
-    
+
     def get_room(self, code):
         return self.rooms.get(code)
 
-    def remove_player(self, player_id):
-        for code, room in self.rooms.items():
+    def remove_room(self, code):
+        """Elimina la stanza e resetta tutti i player coinvolti."""
+        if code in self.rooms:
+            room = self.rooms[code]
+            for player in room.players.values():
+                player.room_code = None
+                player.position = None
+            room.players.clear()
+            del self.rooms[code]
+            print(f"Manager: Room {code} eliminata e player resettati.")
+
+    def remove_player_from_anywhere(self, player_id):
+        """Cerca un player in tutte le stanze e lo rimuove (utile per disconnessioni improvvise)."""
+        for code, room in list(self.rooms.items()):
             if player_id in room.players:
+                is_host = (player_id == room.host_id)
                 room.remove_player(player_id)
-
-                print(f"Player {player_id} rimosso da {code}")
-
-                # se la room è vuota -> cancella
-                if len(room.players) == 0:
-                    del self.rooms[code]
-                    print(f"Room {code} eliminata")
-
-                return
+                
+                # Se la stanza è vuota O se l'host se n'è andato, chiudiamo tutto
+                if len(room.players) == 0 or is_host:
+                    self.remove_room(code)
+                return True
+        return False
