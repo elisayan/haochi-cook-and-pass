@@ -3,6 +3,7 @@ import websockets
 import json
 import uuid
 
+from .db_manager import db
 from .connection_manager import manager
 from .controller_server import room_manager
 from .controller_server import ACTION_HANDLERS 
@@ -38,8 +39,9 @@ async def register_client(websocket):
         print(f"Player {player_id} rimosso.")
 
 async def main():
+    db.connect()
     async with websockets.serve(register_client, "localhost", 8765):
-        print("Server WebSocket in ascolto su ws://localhost:8765")
+        print("Server WebSocket e MongoDB pronti!")
         await asyncio.Future()
 
 if __name__ == "__main__":
