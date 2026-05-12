@@ -1,5 +1,3 @@
-import uuid
-
 class RoomState:
     INIT = "INIT"
     READY = "READY"
@@ -30,7 +28,7 @@ class Room:
         self._update_state()
         return True
 
-    def remove_player(self, player_id):
+    def removed_player(self, player_id):
         #removed_player_position = self.players[player_id].position
         #if player_id in self.players:
         #    del self.players[player_id]
@@ -45,21 +43,13 @@ class Room:
         #self._update_players_position_in_play(removed_player_position)
         #self._update_state()
 
-        player_to_remove = self.players.get(player_id)
-        if not player_to_remove:
-            return
-        
-        removed_player_position = player_to_remove.position
-        del self.players[player_id]
-        if removed_player_position is not None:
-            self._update_players_position_in_play(removed_player_position)
-        
-        if player_id == self.host_id:
-            if self.players:
-                self.host_id = list(self.players.keys())[0]
-            else:
-                self.host_id = None
-
+        if player_id in self.players:
+            self.removed_player = self.players.pop(player_id)
+            if self.removed_player.position is not None:
+                self._update_players_position_in_play(self.removed_player.position)
+            return self.removed_player
+        return None 
+                
     def _update_state(self): #aggiorna lo stato della stanza in base ai giocatori
         if self.state in [RoomState.IN_GAME, RoomState.OVER]:
             return  # non cambiare stato durante la partita
