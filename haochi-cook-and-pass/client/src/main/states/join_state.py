@@ -19,6 +19,8 @@ class JoinState(BaseState):
     def handle_input(self, event, send_queue, model):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.rects["back_arrow"].collidepoint(event.pos):
+                self.input_text = ""
+                self.error_message = ""
                 model.switch_to("MENU")
             elif self.join_btn_rect.collidepoint(event.pos) and self.input_text:
                 send_queue.put(json.dumps({"action": "JOIN_ROOM", "code": self.input_text}))
@@ -26,6 +28,8 @@ class JoinState(BaseState):
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
+                self.input_text = ""
+                self.error_message = ""
                 model.switch_to("MENU")
             elif event.key == pygame.K_BACKSPACE:
                 self.input_text = self.input_text[:-1]

@@ -7,7 +7,7 @@ C_BORDER = (255, 180, 100)  # Arancio bordi
 C_TITLE = (180, 100, 30)    # Marrone titoli
 C_SUBTITLE = (150, 130, 110)# Grigio/Marrone testi secondari
 
-def draw(screen, game_code, player_id, players_id, is_starting_player, font, title_font, circle, plates, start_btn, quit_btn):
+def draw(screen, game_code, player_id, players_id, is_starting_player, font, title_font, code_font, circle, plates, start_btn, quit_btn):
     screen.fill((245, 235, 225)) 
     
     width, height = screen.get_size()
@@ -21,7 +21,7 @@ def draw(screen, game_code, player_id, players_id, is_starting_player, font, tit
     pygame.draw.rect(screen, C_BORDER, code_card, 2, border_radius=12)
     
     label = font.render("CODE:", True, C_SUBTITLE)
-    code_text = title_font.render(game_code, True, (100, 100, 200)) 
+    code_text = code_font.render(game_code, True, (100, 100, 200)) 
     screen.blit(label, (code_card.x + 15, code_card.y + 5))
     screen.blit(code_text, (code_card.x + 15, code_card.y + 30))
 
@@ -29,7 +29,7 @@ def draw(screen, game_code, player_id, players_id, is_starting_player, font, tit
     pygame.draw.rect(screen, C_BG, player_list_card, border_radius=15)
     pygame.draw.rect(screen, C_BORDER, player_list_card, 2, border_radius=15)
 
-    player_label = font.render("CHEFS LIST", True, C_SUBTITLE)
+    player_label = font.render("CHEFS LIST:", True, C_SUBTITLE)
     screen.blit(player_label, (player_list_card.x + 15, player_list_card.y + 5))
 
     suggestion_label = font.render("Share your kitchen code with other chefs!", True, C_SUBTITLE)

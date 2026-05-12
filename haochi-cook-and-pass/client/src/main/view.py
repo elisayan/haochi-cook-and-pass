@@ -52,7 +52,7 @@ class GameView:
             #TO DO rimuovere
             #model.game_code = "1234"
             model.ingr_id = "shrimp" 
-            lobby_view.draw(self.screen, model.game_code, model.ingr_id, model.current_state.ready_players, model.current_state.is_starting_player, self.font, self.code_font, model.current_state.circle, model.current_state.plates, model.current_state.start_btn, model.current_state.quit_btn)
+            lobby_view.draw(self.screen, model.game_code, model.ingr_id, model.current_state.ready_players, model.current_state.is_starting_player, self.font, self.title_font, self.code_font, model.current_state.circle, model.current_state.plates, model.current_state.start_btn, model.current_state.quit_btn)
         elif state == "JOIN_INPUT":
             self.screen.blit(self.general_bg, (0, 0))
             join_view.draw(self.screen, self.title_font, self.font, model.current_state.rects, self.back_arrow_img, model.current_state.input_text, model.current_state.error_message)
