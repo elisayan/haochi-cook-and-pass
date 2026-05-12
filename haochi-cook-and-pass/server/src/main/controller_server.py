@@ -82,6 +82,7 @@ async def handle_join_room(websocket, current_player, data):
     taken_ids = [p.ingr_id for p in room.players.values()]
 
     host_player = room.players.get(room.host_id)
+    print(f"Host player id: {host_player.id}, Host player ingr_id: {host_player.ingr_id}")#debug
     if host_player:
         await host_player.websocket.send(json.dumps({
             "action": "UPDATE_CURRENT_PLAYERS", 
@@ -89,20 +90,22 @@ async def handle_join_room(websocket, current_player, data):
             "is_starting_player": True
         }))
 
-async def handle_quit_room(websocket, current_player, data):    
+async def handle_quit_room(websocket, current_player, data):        
     #TO DO Decommentare per avere corretto funzionamento
-    
+
     #modificato in modo che se esce l'host allora la stanza venga chiusa 
     # e tutti i giocatori vengano riportati al menu, 
     #altrimenti se esce un giocatore qualsiasi allora venga 
     #rimosso dalla stanza e venga notificato l'host 
     #per aggiornare la lista ingredienti/posizioni dei giocatori rimasti
     room = room_manager.get_room(current_player.room_code)
-    room.remove_player(current_player.id)
 
     if not room:
         print(f"Room with code {current_player.room_code} not found.")
         return
+
+    print("Host ID:", room.host_id)  # Debug: stampa l'ID dell'host
+    print("Current Player ID:", current_player.id)  # Debug: stampa l'ID
     
     is_host_leaving = (current_player.id == room.host_id)
 
@@ -117,6 +120,7 @@ async def handle_quit_room(websocket, current_player, data):
                 if player.id != current_player.id:
                     await player.websocket.send(response)
         print(f"Room {room.code} closed due to host leaving.")
+
         room_manager.remove_room(room.code)
     else:
         room.remove_player(current_player.id)
