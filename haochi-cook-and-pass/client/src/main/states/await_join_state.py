@@ -14,8 +14,6 @@ class AwaitJoinState(BaseState):
         }
 
     def handle_input(self, event, send_queue, model):
-
-        print("error message in await join:", self.error_message)  # Debug: stampa il messaggio di errore attuale
         if event.type == pygame.MOUSEBUTTONDOWN:
             # 1. Se c'è un errore (Popup visibile), gestisci solo il tasto del Popup
             if model.error_message:
