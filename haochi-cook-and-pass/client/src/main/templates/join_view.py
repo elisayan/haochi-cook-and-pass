@@ -78,7 +78,7 @@ def draw(screen, title_font, font, rects, back_arrow_img, input_text, error_mess
                                               rects["back_arrow"].height))
     screen.blit(back_arrow, rects["back_arrow"])
 
-def draw_await_join(screen, title_font, font, rects, ingr_id, back_arrow_img):
+def draw_await_join(screen, title_font, font, rects, ingr_id, back_arrow_img, error_message):
     #screen.fill((245, 235, 225)) 
 
     parent = Path(__file__).resolve().parent.parent / "images" / "ingredients"
@@ -138,3 +138,47 @@ def draw_await_join(screen, title_font, font, rects, ingr_id, back_arrow_img):
         error_text = font.render(f"Ingredient image not found: {ingr_id}", True, (200, 40, 40))
         error_rect = error_text.get_rect(center=(width // 2, height // 2))
         screen.blit(error_text, error_rect)
+
+    # 7. POPUP DI ERRORE (visibile solo se error_message non è None)
+    if error_message:
+        # Sfondo scuro semi-trasparente che copre tutto lo schermo
+        overlay = pygame.Surface((width, height), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 180))
+        screen.blit(overlay, (0, 0))
+        
+        # Dimensioni del popup
+        popup_width = 400
+        popup_height = 200
+        popup_rect = pygame.Rect(0, 0, popup_width, popup_height)
+        popup_rect.center = (width // 2, height // 2)
+        
+        # Sfondo del popup
+        pygame.draw.rect(screen, (255, 248, 240), popup_rect, border_radius=20)
+        pygame.draw.rect(screen, (255, 180, 100), popup_rect, 3, border_radius=20)
+        
+        # Icona di errore (X rossa)
+        icon_center = (popup_rect.centerx, popup_rect.top + 45)
+        pygame.draw.circle(screen, (200, 60, 60), icon_center, 25)
+        error_icon = font.render("!", True, (255, 255, 255))
+        error_icon_rect = error_icon.get_rect(center=icon_center)
+        screen.blit(error_icon, error_icon_rect)
+        
+        # Testo di errore
+        error_title = font.render("ERROR", True, (200, 60, 60))
+        error_title_rect = error_title.get_rect(center=(popup_rect.centerx, popup_rect.top + 85))
+        screen.blit(error_title, error_title_rect)
+        
+        error_msg_text = font.render(error_message, True, (100, 70, 50))
+        error_msg_rect = error_msg_text.get_rect(center=(popup_rect.centerx, popup_rect.top + 120))
+        screen.blit(error_msg_text, error_msg_rect)
+        
+        # Pulsante per tornare alla home
+        home_btn = pygame.Rect(0, 0, 160, 45)
+        home_btn.center = (popup_rect.centerx, popup_rect.bottom - 50)
+        pygame.draw.rect(screen, (255, 160, 60), home_btn, border_radius=22)
+        home_text = font.render("GO TO HOME", True, (255, 255, 255))
+        home_text_rect = home_text.get_rect(center=home_btn.center)
+        screen.blit(home_text, home_text_rect)
+        
+        # Salva il rettangolo del pulsante per gestire il click nello stato
+        rects["error_home_btn"] = home_btn
