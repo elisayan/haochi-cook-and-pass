@@ -1,6 +1,6 @@
 import json
 
-from .db_manager import db
+from .db.db_manager import db
 from .connection_manager import manager
 from .room_manager import RoomManager
 from .room import Room

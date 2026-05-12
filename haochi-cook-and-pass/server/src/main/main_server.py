@@ -3,7 +3,7 @@ import websockets
 import json
 import uuid
 
-from .db_manager import db
+from .db.db_manager import db
 from .connection_manager import manager
 from .controller_server import room_manager
 from .controller_server import ACTION_HANDLERS 
