@@ -32,7 +32,7 @@ class RoomManager:
             del self.rooms[code]
             print(f"Manager: Room {code} eliminata e player resettati.")
 
-    def remove_player_from_anywhere(self, player_id):
+    def remove_player(self, player_id):
         """Cerca un player in tutte le stanze e lo rimuove (utile per disconnessioni improvvise)."""
         for code, room in list(self.rooms.items()):
             if player_id in room.players:

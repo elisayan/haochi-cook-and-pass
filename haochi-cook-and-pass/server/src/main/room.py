@@ -28,7 +28,7 @@ class Room:
         self._update_state()
         return True
 
-    def removed_player(self, player_id):
+    def remove_player(self, player_id):
         #removed_player_position = self.players[player_id].position
         #if player_id in self.players:
         #    del self.players[player_id]
