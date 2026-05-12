@@ -70,14 +70,15 @@ class GameController:
             self.model.current_state.error_message = data.get("message")
         elif data.get("action") == "ROOM_CLOSED":
             print("LA STANZA È STATA CHIUSA DALL'HOST")
-            self.model.set_state("MENU")
+            #self.model.set_state("MENU")
+            self.model.current_state.error_message = data.get("message")
+            #print("stato in ROOM CLOSED", self.model.current_state_key)
+            #print("ERRORE DAL SERVER:", self.model.error_message)
 
         #inviato quando si aggiunge un nuovo giocatore alla partita
         elif data.get("action") == "UPDATE_CURRENT_PLAYERS":
             if hasattr(self.model.current_state, "update_players_in_game"):
                 self.model.current_state.update_players_in_game(data.get("players_id"), data.get("is_starting_player"))
-            else:
-                print(f"Messaggio ricevuto ma lo stato attuale non lo gestisce.")
         elif data.get("action") == "CHANGE_MODEL_STATE":
             self.model.set_state(data.get("current_state"))#è "LOBBY" 
             print("MODELLO CAMBIATO IN", data.get("current_state"))
