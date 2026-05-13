@@ -13,8 +13,16 @@ async def handle_start_game(websocket, current_player, data):
     
     current_player.room_code = game_code
     #Aggiungere anche un ingrediente id per il giocatore iniziale 
-    current_player.ingr_id = "carrot" #TO DO prendere id ingrediente del giocatore dal DB
-    
+    #current_player.ingr_id = db.get_ingredients()[0]
+    random_ingredient = db.get_random_ingredient()
+
+    if random_ingredient:
+        current_player.ingr_id = random_ingredient
+        print(f"Player {current_player.id} assigned ingredient: {current_player.ingr_id}")
+    else:
+        print("No ingredients found in the database.")
+        current_player.ingr_id = "shrimp"  # Default ingredient if DB is empty
+
     room.add_player(current_player)
     print(f"Giocatori nella room dopo la creazione:", [player.id for player in room.players.values()])
 
@@ -48,30 +56,44 @@ async def handle_join_room(websocket, current_player, data):
     #Si aggiunge un utente alla partita  
     game_code = data.get("code")
     room = room_manager.get_room(game_code)
-    print(room)
+    #ingr_possible_ids = db.get_ingredients()
 
     if room is None:
         await websocket.send(json.dumps({"action": "ERROR", "message": "Room not found"}))
         return
 
-    room.add_player(current_player)
+    taken_ids = [player.ingr_id for player in room.players.values()]
 
-    #ingr_possible_ids = ["lemon", "orange", "pepper", "rice", "shrimp", "carrot", "basil", "broccoli"]
-    ingr_possible_ids = ["shrimp", "bread", "basil", "egg", "orange", "chili", "rice", "carrot"]
+    found_unique = False
+    attempts = 0
+    max_attempts = 20 # Sicurezza per evitare cicli infiniti se il DB è piccolo
+    
+    assigned_ingr = "chili" # Fallback predefinito
+
+    while not found_unique and attempts < max_attempts:
+        random_candidate = db.get_random_ingredient()
+        
+        if random_candidate not in taken_ids:
+            assigned_ingr = random_candidate
+            found_unique = True
+        
+        attempts += 1
+
+    current_player.ingr_id = assigned_ingr
+    room.add_player(current_player)
 
     players_in_room = room.players.values()
 
     print("Giocatori nella room dopo l'aggiunta:", [player.id for player in room.players.values()])
 
-    taken_ids = []
     for player in players_in_room:
         taken_ids.append(player.ingr_id)
 
     #TO DO prendere da DB fin tanto che non se ne trova uno diverso 
-    available_ids = list(set(ingr_possible_ids) - set(taken_ids))
-    current_player.ingr_id = available_ids[0]  
+    #available_ids = list(set(ingr_possible_ids) - set(taken_ids))
+    #current_player.ingr_id = available_ids[0]  
 
-    print(f"Player {current_player.id} ha preso ingr_id: {current_player.ingr_id}")
+    #print(f"Player {current_player.id} ha preso ingr_id: {current_player.ingr_id}")
 
     #Messaggio inviato al giocatore che ha preso parte ad una room per farlo passare a LobbyState
     current_player_response = json.dumps({
@@ -81,14 +103,13 @@ async def handle_join_room(websocket, current_player, data):
     }) 
     await websocket.send(current_player_response)
 
-    taken_ids = [p.ingr_id for p in room.players.values()]
-
+    all_taken_ids = [p.ingr_id for p in room.players.values()]
     host_player = room.players.get(room.host_id)
     print(f"Host player id: {host_player.id}, Host player ingr_id: {host_player.ingr_id}")#debug
     if host_player:
         await host_player.websocket.send(json.dumps({
             "action": "UPDATE_CURRENT_PLAYERS", 
-            "players_id": taken_ids,
+            "players_id": all_taken_ids,
             "is_starting_player": True
         }))
 

@@ -19,8 +19,15 @@ class DBManager:
         except Exception as e:
             print(f"Errore di connessione al DB: {e}")
 
-    def get_random_ingredient(self, exclude_ids):
-        pass
+    def get_random_ingredient(self):
+        pipeline = [{"$sample": {"size": 1}}]
+        cursor = self.db["ingredients"].aggregate(pipeline)
+        
+        results = list(cursor)
+        if results:
+            return results[0]["name"]
+        return None
+        
 
 
 db = DBManager()
