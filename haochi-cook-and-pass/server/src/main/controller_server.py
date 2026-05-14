@@ -171,6 +171,7 @@ async def handle_quit_room(websocket, current_player, data):
 # - Si setta la posizione dei giocatori a quella ricevuta dal messaggio
 # - Si fa cambiare lo stato del model a tutti i giocatori in PLAYING 
 async def handle_start_playing(websocket, current_player, data):
+    print(f"DEBUG: Ricevuto ordine posizioni: {data.get('players_position')}")
     room = room_manager.get_room(current_player.room_code)
     room.set_players_position_in_play(data.get("players_position"))
     #Si cambia lo stato di tutti i giocatori in PLAYING tutti i giocatori
