@@ -190,25 +190,34 @@ async def handle_start_playing(websocket, current_player, data):
 
 async def handle_pass_ingredient(websocket, current_player, data):
     #bisogna prendere la websocket del giocatore che si trova a sinistra o a destra a sinistra
+    print("IL SERVER ha ricevuto la richiesta di passaggio dell'ingrediente")
     pass_direction = data.get("direction") #LEFT o RIGHT
     room = room_manager.get_room(current_player.room_code)
+    if not room:
+        print(f"Stanza non trovata per il giocatore {current_player.id}")
+        return
     if pass_direction == "LEFT":
         #prendere la websocket del player a sinistra di quello corrente
         target_direction = "RIGHT"
     elif pass_direction == "RIGHT":
         #prendere la websocket del player a destra di quello corrente
         target_direction = "LEFT"
+    print(target_direction)    
 #TO DO creare la funzione
     target_player = room.get_near_player(current_player, pass_direction)
-    target_player_socket = target_player.websocket        
-    response = json.dumps({
-        "action": "NEW_INGREDIENT", 
-        "ingr_name": data.get("ingr_name"),
-        "direction": target_direction,
-        "score": data.get("score"),
-        "dimension": data.get("dimension")
-    })
-    await target_player_socket.send(response)
+    if target_player is not None:
+        print(f"Il vicino a cui passare l'ingrediente {data.get("ingr_name")} è {target_player.ingr_id}")
+        target_player_socket = target_player.websocket        
+        response = json.dumps({
+            "action": "NEW_INGREDIENT", 
+            "ingr_name": data.get("ingr_name"),
+            "direction": target_direction,
+            "score": data.get("score"),
+            "dimension": data.get("dimension")
+        })
+        await target_player_socket.send(response)
+    else:
+        print(f"ATTENZIONE: Nessun vicino trovato in direzione {data.get("direction")} per questo giocatore!")    
 
 
 async def handle_plate_complete(websocket, current_player, data):
@@ -231,6 +240,6 @@ ACTION_HANDLERS = {
     "JOIN_ROOM": handle_join_room,
     "QUIT_ROOM": handle_quit_room,
     "START_PLAYING": handle_start_playing,
-    "PASS_INGERDIENT": handle_pass_ingredient,
+    "PASS_INGREDIENT": handle_pass_ingredient,
     "PLATE_COMPLETE": handle_plate_complete
 }

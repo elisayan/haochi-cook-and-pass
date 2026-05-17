@@ -32,8 +32,8 @@ async def websocket_client():
                         msg_queue.put(message)
                     except asyncio.TimeoutError:
                         continue
-            except websockets.exceptions.ConnectionClosed:
-                print("Connessione chiusa")
+            except websockets.exceptions.ConnectionClosed as e:
+                print(f"Connessione chiusa. Codice: {e.rcvd.code}, Motivo: {e.rcvd.reason}")
 
         await asyncio.gather(send_handler(), recv_handler())
 

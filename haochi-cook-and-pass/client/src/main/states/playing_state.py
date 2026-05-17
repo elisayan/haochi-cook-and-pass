@@ -74,18 +74,21 @@ class PlayingState(BaseState):
     """Metodo per aggiornare tutti gli elementi del gioco"""
     def update(self, mouse_pos, screen_width, screen_height):
         #mouse_pos = pygame.mouse.get_pos()
-        if self.cook_timer.curr_time >= self.cook_timer.clock_time:
+        current_timer_val = self.cook_timer.get_current_time()
+        if current_timer_val >= self.cook_timer.clock_time:
             #il tempo è trascorso allora si deve rimuovere la lista della ricetta corrente e anche current_recipe
             self.cook_timer.reset_timer()
             self.passed_time = 0.0
             self.current_recipe = []
-            self.recipes.pop(0)
+            if self.recipes:
+                self.recipes.pop(0)
             if len(self.recipes) == 0:
                 print("Lo score del giocatore è: ", self.score)
                 print("Il player ha finito le sue ricette, deve mandare un messaggino al server per avvisarlo che è in attesa anche se ancora può dover aspettare gli altri e passare ingredienti")
                 #TO DO si chiude il timer
                 self.stop_clock() 
                 self.passed_time = 0.0
+                #TO DO MODIFICA STATO ATTESA DEL GIOCATORE PER PASSARE A LIVELLO DOPO
                 self.send_msg += [CompletePlateMsg(self.current_recipe, total_score, finished_all_plates = True)]
         else:    
             self.passed_time = round(self.cook_timer.curr_time, 1)
@@ -109,6 +112,7 @@ class PlayingState(BaseState):
         self.show_error_in_plate = False
         self.drag_not_next_ingredient = False
         next_ingr = self.get_next_ingredient()
+        next_ingr_name = next_ingr.name if next_ingr is not None else None #None se la lista è vuota
         self.send_msg = []
 
         self.recipe_complete = len(self.recipes) > 0 and len(self.current_recipe) > 0 and len(self.recipes[0]) == 0
@@ -123,11 +127,8 @@ class PlayingState(BaseState):
             else:    
                 elem.update_position(mouse_pos, screen_width, screen_height)
                 #se l'ingrediente è trascinato si setta a true self.drag_not_next_ingredient
-                if next_ingr:
-                    if elem.dragging and elem.name != next_ingr.name:
-                        self.drag_not_next_ingredient = True
-                else:
-                   if elem.dragging:
+                if elem.dragging:
+                    if next_ingr_name is None or elem.name != next_ingr_name:
                         self.drag_not_next_ingredient = True          
                 #un ingrediente è stato passato ad un vicino
                 if elem.position[0] < 0:
@@ -150,7 +151,8 @@ class PlayingState(BaseState):
             for ingr in self.current_recipe:
                 total_score += ingr.score #calcolo del punteggio ottenuto dal piatto completato
             self.score += total_score    
-            self.recipes.pop(0)
+            if self.recipes:
+                self.recipes.pop(0)
             if len(self.recipes) == 0:
                 print("Lo score del giocatore è: ", self.score)
                 print("Il player ha finito le sue ricette, deve mandare un messaggino al server per avvisarlo che è in attesa anche se ancora può dover aspettare gli altri e passare ingredienti")
@@ -174,8 +176,8 @@ class PlayingState(BaseState):
         for i in range(len(all_elements)):
             for j in range(i + 1, len(all_elements)):
                 # Controlla collisione tra coppia i e j
-                all_elements[i].check_collision_side(all_elements[j], next_ingr.name if next_ingr else None)
-                all_elements[j].check_collision_side(all_elements[i], next_ingr.name if next_ingr else None)   
+                all_elements[i].check_collision_side(all_elements[j], next_ingr_name)
+                all_elements[j].check_collision_side(all_elements[i], next_ingr_name)   
                 #if all_elements[i].dragging:
                    # print("spostato")
                 #Verifcica se l'ingrediente spostato non è il prossimo ingrediente della ricetta 
@@ -185,7 +187,7 @@ class PlayingState(BaseState):
                      #   print("Non è giusto")
         # 3. Mantieni gli ingredienti "cucinati" attaccati al piatto
         for ingr in self.current_recipe:
-            ingr.position = self.plate.position     
+            ingr.position = self.plate.position #copia del vettore indipendente     
 
         return self.send_msg      
 

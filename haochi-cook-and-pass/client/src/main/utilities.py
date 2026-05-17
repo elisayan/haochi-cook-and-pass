@@ -211,12 +211,12 @@ class PartialMessage():
 
 class PassIngredientMsg(PartialMessage):
     def __init__(self, ingr_name, direction, score, dimension):
-        #si crea un dizionario che è il messaggio parziale che deve essere inviato
+        #dizionario che è il messaggio parziale che deve essere inviato al server
         self.msg = {
             "ingr_name": ingr_name,
-            "direction": direction.name, #conversion of Side... in string
+            "direction": direction.name, #conversione di Side... in stringa
             "score": score,
-            "dimension": dimension.tolist(), #converion of numpy array to List
+            "dimension": dimension.tolist(), #conversione del numpy array in lista
             "action": "PASS_INGREDIENT"
         }
 

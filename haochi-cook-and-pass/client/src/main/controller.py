@@ -53,7 +53,9 @@ class GameController:
             self.model.set_state("LOBBY")
             #gestito dentro a controller_server e viene inviato al target_player quando il server riceve il messaggio 
         elif data.get("action") == "NEW_INGREDIENT":
-            self.model.current_state.add_new_ingredient(data.get("ingr_name"), data.get("dimension"), data.get("score"), data.get("direction"))
+            ingr_name = data.get("ingr_name")
+            image_ingr_name = f"{ingr_name}.PNG"
+            self.model.current_state.add_new_ingredient(image_ingr_name, data.get("dimension"), data.get("score"), data.get("direction"))
         elif data.get("action") == "STARTING_INGREDIENTS":
             #lista di tuple(nome, dimensione, score)
             self.model.current_state.add_starting_ingredients(data.get("ingredients"))       
