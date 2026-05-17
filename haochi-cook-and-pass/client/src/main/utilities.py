@@ -144,7 +144,7 @@ class Ingredient(Element):
     def __init__(self, image_name, dimension:tuple, position, score):
         super().__init__(image_name, dimension, position)
         self.is_in_plate = False
-        self.name = image_name.removesuffix('.png')  
+        self.name = image_name.removesuffix('.PNG')  
         self.score = score
 
     def check_collision_side(self, other_elem, next_ingredient_name = None):

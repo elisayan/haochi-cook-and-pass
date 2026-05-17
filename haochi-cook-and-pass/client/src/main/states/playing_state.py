@@ -9,12 +9,12 @@ class PlayingState(BaseState):
     def __init__(self, game):
         super().__init__(game)
         self.ingredients = [] #ingredienti che il giocatore ha nella sua interfaccia di gioco 
-        self.recipes = [[Ingredient('shrimp2.png', (30, 30), (0, 0), 1.5), Ingredient('ingred3.png', (30, 30), (0, 0), 3.5)], [Ingredient('lemon.png', (30, 30), (0, 0), 2.0)]]
-        self.plate = Element("plate.png", (80, 80), (100, 100)) #lista di ricette del giocatore
+        self.recipes = [[Ingredient('shrimp2.PNG', (30, 30), (0, 0), 1.5), Ingredient('ingred3.PNG', (30, 30), (0, 0), 3.5)], [Ingredient('lemon.PNG', (30, 30), (0, 0), 2.0)]]
+        self.plate = Element("plate.PNG", (80, 80), (100, 100)) #lista di ricette del giocatore
         self.plate.set_plate()
-        self.ingredients.append(Ingredient('ingred3.png', (100, 40), (10, 10), 3.5))
-        self.ingredients.append(Ingredient('shrimp2.png', (50, 50), (300, 300), 1.5))
-        self.ingredients.append(Ingredient("lemon.png", (70, 70), (200, 200), 2.0))
+        self.ingredients.append(Ingredient('ingred3.PNG', (100, 40), (10, 10), 3.5))
+        self.ingredients.append(Ingredient('shrimp2.PNG', (50, 50), (300, 300), 1.5))
+        self.ingredients.append(Ingredient("lemon.PNG", (70, 70), (200, 200), 2.0))
         self.score = 0.0
         self.current_recipe = [] #lista di ingredienti aggiunti nel piatto corrente per comporre la ricetta
         self.show_error_in_plate = False 
@@ -89,7 +89,7 @@ class PlayingState(BaseState):
                 self.stop_clock() 
                 self.passed_time = 0.0
                 #TO DO MODIFICA STATO ATTESA DEL GIOCATORE PER PASSARE A LIVELLO DOPO
-                self.send_msg += [CompletePlateMsg(self.current_recipe, total_score, finished_all_plates = True)]
+                self.send_msg += [CompletePlateMsg(self.current_recipe, 0.0, finished_all_plates = True)]
         else:    
             self.passed_time = round(self.cook_timer.curr_time, 1)
             #print(self.passed_time)    
