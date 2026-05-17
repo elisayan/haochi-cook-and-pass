@@ -176,10 +176,13 @@ async def handle_start_playing(websocket, current_player, data):
     room = room_manager.get_room(current_player.room_code)
     room.set_players_position_in_play(data.get("players_position"))
     #Si cambia lo stato di tutti i giocatori in PLAYING tutti i giocatori
+    ws_players_in_game = []
+    for player in room.players.values():
+        ws_players_in_game.append(player.websocket)
     await manager.broadcast(json.dumps({
         "action": "CHANGE_MODEL_STATE", 
         "current_state": "PLAYING",
-    }))
+    }), include_only=ws_players_in_game)
     #TO DO:
     # @ pensare a come distribuire i piatti da completare ai giocatori attraverso STARTING_PLATES
     # @ pensare a come distribuire tutti gli ingredienti dei piatti tra i vari giocatori attraverso messaggio STARTING_INGREDIENTS

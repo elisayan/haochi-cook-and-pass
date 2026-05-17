@@ -76,7 +76,7 @@ class Room:
         if player is not None:
             player.position = pos
             #Capire perchè non si trova l'id corrispondente nella stanza per l'host che l'ha avviata
-            #L'HOST (creatore stanza) passave l'id con l'estensione dell'immagine dell'ingrediente
+            #L'HOST (creatore stanza) passava l'id con l'estensione dell'immagine dell'ingrediente
         else:
             print(f"ATTENZIONE: Giocatore con ingrediente {player_ingr_id} non trovato nella stanza!")#debug
             print("id dei giocatori: ")

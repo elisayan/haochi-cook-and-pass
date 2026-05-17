@@ -2,7 +2,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
 # Sostituisci <db_password> con la password corretta
-URI = "mongodb+srv://elisayan811_db_user:haochi@haochi.dtglmg1.mongodb.net/?appName=haochi"
+URI = "mongodb+srv://elisayan811_db_user:<db_password>@haochi.dtglmg1.mongodb.net/?appName=haochi"
 
 class DBManager:
     def __init__(self):
