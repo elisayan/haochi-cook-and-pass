@@ -68,14 +68,20 @@ class Room:
             player.position = index
 
     def set_players_position_in_play(self, players_pos_by_ingr_id):
+
         for pos, player_ingr_id in enumerate(players_pos_by_ingr_id):
             player = self._get_player_from_ingr_id(player_ingr_id)
-        
+
         # AGGIUNTO: Controllo di sicurezza
         if player is not None:
             player.position = pos
+            #Capire perchè non si trova l'id corrispondente nella stanza per l'host che l'ha avviata
+            #L'HOST (creatore stanza) passave l'id con l'estensione dell'immagine dell'ingrediente
         else:
             print(f"ATTENZIONE: Giocatore con ingrediente {player_ingr_id} non trovato nella stanza!")#debug
+            print("id dei giocatori: ")
+            for player in self.players.values():
+                print(player.ingr_id)
 
     def _get_player_from_ingr_id(self, ingr_id):
         for player in self.players.values():

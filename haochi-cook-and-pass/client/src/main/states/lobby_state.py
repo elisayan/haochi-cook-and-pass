@@ -38,8 +38,8 @@ class LobbyState(BaseState):
                     print("Si comunica al server per iniziare la partita")
                     order_players = []
                     for i in range(max(self.playing_turn), -1, -1):
-                        order_players.append(self.playing_turn[i].name)
-                    print(order_players)
+                        order_players.append(self.playing_turn[i].name.removesuffix(".PNG"))
+                    print("ORDINE nella partita ", order_players)
                     send_queue.put(json.dumps({
                         "action": "START_PLAYING",
                         "players_position": order_players

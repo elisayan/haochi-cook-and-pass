@@ -25,7 +25,7 @@ async def handle_start_game(websocket, current_player, data):
 
     room.add_player(current_player)
     print(f"Giocatori nella room dopo la creazione:", [player.id for player in room.players.values()])
-
+    print(f"DEBUG: id del giocatore che ha creato la room è: {current_player.ingr_id}")
     response = json.dumps({
         "action": "ROOM_CREATED", 
         "code": game_code, 
@@ -96,6 +96,7 @@ async def handle_join_room(websocket, current_player, data):
     #print(f"Player {current_player.id} ha preso ingr_id: {current_player.ingr_id}")
 
     #Messaggio inviato al giocatore che ha preso parte ad una room per farlo passare a LobbyState
+    print(f"DEBUG: id del giocatore aggiunto è: {current_player.ingr_id}")
     current_player_response = json.dumps({
         "action": "CHANGE_MODEL_STATE", 
         "current_state": "AWAIT_JOIN",
