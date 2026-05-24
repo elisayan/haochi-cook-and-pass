@@ -1,5 +1,5 @@
 import pygame
-from .templates import menu_view, lobby_view, join_view, play_view
+from .templates import menu_view, lobby_view, join_view, play_view, scoreboard_view
 from pathlib import Path
 
 class GameView:
@@ -80,5 +80,8 @@ class GameView:
                                 model.recipe_complete,
                                 model.drag_not_next_ingredient, 
                                 tick_rotation)   
+        elif state == "SCORE":
+            self.screen.blit(self.general_bg, (0, 0))
+            scoreboard_view.draw(self.screen, self.title_font, self.font, model.current_state.rects, self.back_arrow_img, model.current_state.scores)
         #todo aggiungere altri stati
         pygame.display.flip()
