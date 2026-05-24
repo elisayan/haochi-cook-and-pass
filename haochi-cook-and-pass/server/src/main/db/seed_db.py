@@ -30,8 +30,16 @@ def seed():
         {"name": "tomato", "type": "vegetable"}
     ]
 
+    #Ricetta
+    recipes = [{"name": "broccoli_stir_fry",
+                "ingredients": ["broccoli","carrot","onion"],
+                "difficulty": "medium",
+                "points": 30,
+                "time" : 120}]
+
     db.db["ingredients"].insert_many(ingredients)
     print("Database seeded with ingredients!")
+
 
 if __name__ == "__main__":
     seed()

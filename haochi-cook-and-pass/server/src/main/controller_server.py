@@ -191,6 +191,7 @@ async def handle_start_playing(websocket, current_player, data):
 async def handle_pass_ingredient(websocket, current_player, data):
     #bisogna prendere la websocket del giocatore che si trova a sinistra o a destra a sinistra
     print("IL SERVER ha ricevuto la richiesta di passaggio dell'ingrediente")
+    current_player.num_passed_ingr += 1
     pass_direction = data.get("direction") #LEFT o RIGHT
     room = room_manager.get_room(current_player.room_code)
     if not room:
@@ -230,6 +231,8 @@ async def handle_plate_complete(websocket, current_player, data):
             # TO DO inviare STARTING_INGREDIENTS e STARTING_PLATES a tutti i giocatori
             pass
     current_player.score += data.get("gained_score")   
+    print("IL piatto è arrivato in cucina")
+    current_player.num_plates_completed += 1
     # TO DO  
     # si può anche pensare di tenere traccia attraverso un dizionario del numero di ciascun tupo di ingrediente usato dal giocatore
     # e anche del numero di piatti composti e del numero di essi per ogni tipo

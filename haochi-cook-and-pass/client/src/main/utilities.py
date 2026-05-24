@@ -190,7 +190,7 @@ class CountdownThread(threading.Thread):
     def __init__(self, clock_time):
         super().__init__()
         self.curr_time = 0.0
-        self.clock_time = clock_time #TO CHANGE clock time non serve +
+        self.clock_time = clock_time
         # Flag per fermare il thread in modo pulito se necessario
         self.running = True 
 
@@ -199,22 +199,26 @@ class CountdownThread(threading.Thread):
         while self.running:
             sleep(0.1)
             self.curr_time += 0.1
+
     def get_current_time(self):
         """Ritorna il valore attuale del timer"""
         return round(self.curr_time, 1)
     
     def reset_timer(self):
         self.curr_time = 0.0
+    # usato per settare il tempo in cui ciascun piatto deve essere completato
+    def reset_alarm_time(self, max_time_for_plate_completion):
+        self.clock_time = max_time_for_plate_completion
 
 class PartialMessage():
     pass
 
 class PassIngredientMsg(PartialMessage):
     def __init__(self, ingr_name, direction, score, dimension):
-        #dizionario che è il messaggio parziale che deve essere inviato al server
+        #dizionario che è il messaggio che deve essere inviato al server quando il client passa un ingrediente a uno dei vicini
         self.msg = {
             "ingr_name": ingr_name,
-            "direction": direction.name, #conversione di Side... in stringa
+            "direction": direction.name, #conversione di Side in stringa
             "score": score,
             "dimension": dimension.tolist(), #conversione del numpy array in lista
             "action": "PASS_INGREDIENT"
@@ -225,6 +229,7 @@ class CompletePlateMsg(PartialMessage):
         list_names = []
         for ingr in list_ingr:
             list_names.append(ingr.name)
+        #messaggio inviato quando il client ha terminato di comporre un piatto per mandarlo in cucina    
         self.msg = {
             "completed_plate": list_names,
             "finished_all_plates": finished_all_plates,

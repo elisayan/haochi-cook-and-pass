@@ -15,6 +15,8 @@ class Player:
         #La posizione viene scelta dall'utente che ha avviato la partita
         self.score = 0.0 #punteggio del giocatore all'interno della partitaoikgt
         self.ingr_id = None #identificativo dell'utente all'interno della partita come nome di un ingrediente
+        self.num_plates_completed = 0
+        self.num_passed_ingr = 0
 
     def disconnect(self):
         self.state = PlayerState.DISCONNECTED
