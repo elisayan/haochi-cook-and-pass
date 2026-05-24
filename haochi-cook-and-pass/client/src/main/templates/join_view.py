@@ -89,13 +89,11 @@ def draw_await_join(screen, title_font, font, rects, ingr_id, back_arrow_img, er
     width, height = screen.get_size()
     ticks = pygame.time.get_ticks()
 
-    # 1. Titolo
     title_line1 = title_font.render("SHOW YOUR INGREDIENT", True, (180, 100, 50))
     title_line2 = title_font.render("TO THE HEAD CHEF!", True, (180, 100, 50))
     
-    # Spaziatura tra le righe
     line_spacing = 5
-    title_height = title_line1.get_height() + title_line2.get_height() + line_spacing
+    #title_height = title_line1.get_height() + title_line2.get_height() + line_spacing
     title_y = height // 6
     
     title1_rect = title_line1.get_rect(center=(width // 2, title_y))
@@ -116,18 +114,15 @@ def draw_await_join(screen, title_font, font, rects, ingr_id, back_arrow_img, er
         offset_y = math.sin(ticks * 0.005) * 10 
         img_rect = ingredient_img.get_rect(center=(width // 2, (height // 2) + offset_y))
         
-        # 4. Aura intorno all'ingrediente (cerchio semitrasparente)
         aura_surface = pygame.Surface((180, 180), pygame.SRCALPHA)
         pygame.draw.circle(aura_surface, (255, 220, 180, 100), (90, 90), 90)
         screen.blit(aura_surface, (img_rect.centerx - 90, img_rect.centery - 90))
         screen.blit(ingredient_img, img_rect)
         
-        # 5. Nome ingrediente
         name_surf = font.render(ingr_id.upper(), True, (100, 70, 50))
         name_rect = name_surf.get_rect(center=(width // 2, img_rect.bottom + 30))
         screen.blit(name_surf, name_rect)
         
-        # 6. Messaggio di attesa animato
         dots = "." * ((ticks // 500) % 4)
         waiting_text = font.render(f"Waiting for the head chef{dots}", True, (150, 130, 110))
         waiting_rect = waiting_text.get_rect(center=(width // 2, height - 120))
@@ -139,9 +134,7 @@ def draw_await_join(screen, title_font, font, rects, ingr_id, back_arrow_img, er
         error_rect = error_text.get_rect(center=(width // 2, height // 2))
         screen.blit(error_text, error_rect)
 
-    # 7. POPUP DI ERRORE (visibile solo se error_message non è None)
     if error_message:
-        # Sfondo scuro semi-trasparente che copre tutto lo schermo
         overlay = pygame.Surface((width, height), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 180))
         screen.blit(overlay, (0, 0))
