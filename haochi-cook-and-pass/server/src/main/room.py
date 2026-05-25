@@ -1,3 +1,5 @@
+DIFFICULTY_ORDER = ["easy", "medium", "hard"]
+
 class RoomState:
     INIT = "INIT"
     READY = "READY"
@@ -13,6 +15,7 @@ class Room:
         self.host_id = None
         self.num_waiting_players = 0 #si tiene conto del numero di giocatori che sono in attesa di passare al livello successivo
         # il numero di players in attesa si incrementa ogni volta che viene ricevuto dal controller_server un nuovo messaggio che è stato completato un piatto
+        self.current_level = "easy"
 
     def add_player(self, player):
         if len(self.players) >= 8:
@@ -109,3 +112,10 @@ class Room:
             if player.position == near_position:
                 return player
         return None    
+    
+    def advance_level(self):
+        current_index = DIFFICULTY_ORDER.index(self.current_level)
+        if current_index < len(DIFFICULTY_ORDER) - 1:
+            self.current_level = DIFFICULTY_ORDER[current_index + 1]
+            return self.current_level
+        return None
