@@ -27,6 +27,18 @@ class DBManager:
         if results:
             return results[0]["name"]
         return None
+    
+    def get_random_recipes_by_difficulty(self, difficulty, size=1):
+        pipeline = [
+            {"$match": {"difficulty": difficulty}},
+            {"$sample": {"size": size}},
+            {"$project": {"_id": 0}} #viene escluso l'id che non è serializzabile
+        ]
+        cursor = self.db["recipes"].aggregate(pipeline)
+        results = list(cursor)
+        if results:
+            return results
+        return None
         
 
 

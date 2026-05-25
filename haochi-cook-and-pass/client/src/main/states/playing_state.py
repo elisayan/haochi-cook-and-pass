@@ -13,23 +13,24 @@ class PlayingState(BaseState):
         self.recipes = []
         self.plate = Element("plate.PNG", (80, 80), (100, 100)) #lista di ricette del giocatore
         self.plate.set_plate()
-        self.ingredients.append(Ingredient('ingred3.PNG', (100, 40), (10, 10), 3.5))
-        self.ingredients.append(Ingredient('shrimp2.PNG', (50, 50), (300, 300), 1.5))
-        self.ingredients.append(Ingredient("lemon.PNG", (70, 70), (200, 200), 2.0))
+        #self.ingredients.append(Ingredient('ingred3.PNG', (100, 40), (10, 10), 3.5))
+        #self.ingredients.append(Ingredient('shrimp2.PNG', (50, 50), (300, 300), 1.5))
+        #self.ingredients.append(Ingredient("lemon.PNG", (70, 70), (200, 200), 2.0))
         self.score = 0.0
         self.current_recipe = [] #lista di ingredienti aggiunti nel piatto corrente per comporre la ricetta
+        self.current_time = 1
         self.show_error_in_plate = False 
         self.new_ingredients = [] # lista di ingredienti inviati dai vicini o dalla cucina: tupla (Ingrediente, direzione) 
         self.recipe_complete = False #dice se la ricetta corrente è stata completata
         self.drag_not_next_ingredient = False #dice se viene trascinato un ingrediente che non è il prossimo della ricetta
         #campi per la gestione del timer
         self.cook_timer = None
-        self.plate_time = 30
+        #self.plate_time = 30
         self.passed_time = 0.0
         #Lista di messaggi da inviare al server
         self.send_msg = []
         #TO DO DA TOGLIERE solo per TEST!!!!!
-        self.add_starting_recipes([])
+        #self.add_starting_recipes([])
         #faccio iniziare il timer
         #self.start_game()
 
@@ -85,26 +86,35 @@ class PlayingState(BaseState):
         #if self.recipes:
         #    if self.cook_timer.clock_time > self.recipes[0].time:
         #        self.cook_timer.reset_alarm_time(self.recipes[0].time)
-        current_timer_val = self.cook_timer.get_current_time()
-        if current_timer_val >= self.cook_timer.clock_time:
-            #il tempo è trascorso allora si deve rimuovere la lista della ricetta corrente e anche current_recipe
-            self.cook_timer.reset_timer()
-            self.passed_time = 0.0
-            self.current_recipe = []
-            if self.recipes:
-                self.recipes.pop(0)
-            if len(self.recipes) == 0:
-                print("Lo score del giocatore è: ", self.score)
-                print("Il player ha finito le sue ricette, deve mandare un messaggino al server per avvisarlo che è in attesa anche se ancora può dover aspettare gli altri e passare ingredienti")
-                #TO DO si chiude il timer
-                self.stop_clock() 
+        if self.cook_timer:
+            current_timer_val = self.cook_timer.get_current_time()
+            if current_timer_val >= self.cook_timer.clock_time:
+                #il tempo è trascorso allora si deve rimuovere la lista della ricetta corrente e anche current_recipe
+                print("TEMPO SCADUTO")
+                self.cook_timer.reset_timer()
                 self.passed_time = 0.0
-                #TO DO MODIFICA STATO ATTESA DEL GIOCATORE PER PASSARE A LIVELLO DOPO
-                self.send_msg += [CompletePlateMsg(self.current_recipe, 0.0, finished_all_plates = True)]
-            else:
-                self.cook_timer.reset_alarm_time(self.recipes[0].time)  
-        else:    
-            self.passed_time = round(self.cook_timer.curr_time, 1)
+                self.current_recipe = []
+                if self.recipes:
+                    self.recipes.pop(0)
+                    #si aggiorna il timer
+                    if self.recipes:
+                        self.current_time = self.recipes[0].time #AGGIUNTO
+                if len(self.recipes) == 0:
+                    print("Lo score del giocatore è: ", self.score)
+                    print("Il player ha finito le sue ricette, deve mandare un messaggino al server per avvisarlo che è in attesa anche se ancora può dover aspettare gli altri e passare ingredienti")
+                    #TO DO si chiude il timer
+                    self.stop_clock() 
+                    self.passed_time = 0.0
+                    #TO DO MODIFICA STATO ATTESA DEL GIOCATORE PER PASSARE A LIVELLO DOPO
+                    self.send_msg += [CompletePlateMsg(self.current_recipe, 0.0, finished_all_plates = True)]
+                else:
+                    self.cook_timer.reset_alarm_time(self.recipes[0].time)  
+            else:    
+                self.passed_time = round(self.cook_timer.curr_time, 1)
+        else:
+            # il timer non esiste ancora
+            current_timer_val = 0
+            self.passed_time = 0.0            
             #print(self.passed_time)    
         #Aggiunta degli ingredienti inviati dal server (dalla cucina o dai vicini)
         for (ingr, side) in self.new_ingredients:
@@ -175,6 +185,7 @@ class PlayingState(BaseState):
                 self.passed_time = 0.0
             else: #caso inviato il piatto ma ce ne sono altri
                 self.send_msg += [CompletePlateMsg(self.current_recipe.copy(), plate_total_score)]
+                self.current_time = self.recipes[0].time #AGGIUNTI
                 self.cook_timer.reset_alarm_time(self.recipes[0].time) #aggiunta
             #si passa al prossimo piatto              
             self.current_recipe = []
@@ -224,15 +235,30 @@ class PlayingState(BaseState):
 
     #metodo per aggiungere una lista di ingredienti all'inizio del livello
     def add_starting_ingredients(self, list_ingredients):
-        for (ingr_name, dimension, score) in list_ingredients:
-            self.add_new_ingredient(ingr_name, dimension, score, "BOTTOM")
+        print(f"Ricevuta la seguente lista di ingredienti {list_ingredients}")
+        #for (ingr_name, dimension, score) in list_ingredients:
+        #    self.add_new_ingredient(ingr_name, dimension, score, "BOTTOM")
+        for ingr in list_ingredients:
+            self.add_new_ingredient(f"{ingr}.PNG", (50, 50), 0, "BOTTOM")
 
 #sistemare
     #metodo per settare la lista di piatti all'inizio del livello invocato quando arriva la lista di ricette dal server
     def add_starting_recipes(self, list_recipes): #list_recipes formata da lista di ricette dove ogni ricetta ha lista (nome_igr, dimensione, score), score e time
-        self.recipes = [Recipe([Ingredient('shrimp2.PNG', (30, 30), (0, 0), 1.5), Ingredient('ingred3.PNG', (30, 30), (0, 0), 3.5)], 270, 20), Recipe([Ingredient('lemon.PNG', (30, 30), (0, 0), 2.0)], 240, 5)]
+        print(f"Ricevuta la seguente lista di ricette {list_recipes}")
+        for recipe in list_recipes:
+            list_ingredients = []
+            for ingr in recipe["ingredients"]:
+                list_ingredients.append(Ingredient(f"{ingr}.PNG", (30, 30), (0, 0), 0))
+            self.recipes.append(Recipe(list_ingredients, recipe["time"], recipe["points"]))
+        self.current_time = self.recipes[0].time #AGGIUNTO   
+        #Quando si passa al livello successivo si rimuovono tutti gli ingredienti del livello precedente
+        self.ingredients = [] 
         #si fa iniziare il timer
-        self.start_game() 
+        self.start_game()     
+        #TEST
+        #self.recipes = [Recipe([Ingredient('shrimp2.PNG', (30, 30), (0, 0), 1.5), Ingredient('ingred3.PNG', (30, 30), (0, 0), 3.5)], 270, 20), Recipe([Ingredient('lemon.PNG', (30, 30), (0, 0), 2.0)], 240, 5)]
+        #si fa iniziare il timer
+        #self.start_game() 
     #def draw(self, screen):
     #    menu_view.draw(screen, self.font, self.sub_menu, self.main_btn, self.create_btn, self.join_btn)'''' #for (ingr_name, dimension, score) in list_plates:
         #    self.recipes.append(Ingredient(ingr_name + ".png", dimension, (0, 0) , score))

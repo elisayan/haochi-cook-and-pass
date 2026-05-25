@@ -146,6 +146,8 @@ class Ingredient(Element):
         self.is_in_plate = False
         self.name = image_name.removesuffix('.PNG')  
         self.score = score
+        self.path = Path(__file__).resolve().parent / "images" / "ingredients" / image_name
+        
 
     def check_collision_side(self, other_elem, next_ingredient_name = None):
         # Se l'ingrediente NON è nel piatto, esegui la logica di rimbalzo del genitore
@@ -202,8 +204,8 @@ class CountdownThread(threading.Thread):
 
     def get_current_time(self):
         """Ritorna il valore attuale del timer"""
-        #print("clock_time", self.clock_time)
-        #print("tempo trascorso", round(self.curr_time, 1))
+        print("clock_time", self.clock_time)
+        print("tempo trascorso", round(self.curr_time, 1))
         return round(self.curr_time, 1)
     
     def reset_timer(self):

@@ -13,6 +13,7 @@ class Room:
         self.host_id = None
         self.num_waiting_players = 0 #si tiene conto del numero di giocatori che sono in attesa di passare al livello successivo
         # il numero di players in attesa si incrementa ogni volta che viene ricevuto dal controller_server un nuovo messaggio che è stato completato un piatto
+        self.curr_level = 0 #livello corrente a cui si è nella partita
 
     def add_player(self, player):
         if len(self.players) >= 8:
