@@ -27,6 +27,25 @@ class DBManager:
         if results:
             return results[0]["name"]
         return None
+    
+    def get_recipes_by_level(self, difficulty):
+        cursor = self.db["recipes"].find({"difficulty": difficulty})
+        recipes = []
+        for r in cursor:
+            recipes.append({
+                "name": r["name"],
+                "ingredients": r["ingredients"],
+                "difficulty": r["difficulty"],
+                "points": r["points"],
+                "time": r["time"]
+            })
+        return recipes
+    
+    def get_recipe_level(self, recipe_name):
+        recipe = self.db["recipes"].find_one({"name": recipe_name})
+        if recipe:
+            return recipe["difficulty"]
+        return None
         
 
 
