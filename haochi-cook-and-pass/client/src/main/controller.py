@@ -82,8 +82,12 @@ class GameController:
             if hasattr(self.model.current_state, "update_players_in_game"):
                 self.model.current_state.update_players_in_game(data.get("players_id"), data.get("is_starting_player"))
         elif data.get("action") == "CHANGE_MODEL_STATE":
-            self.model.set_state(data.get("current_state"))#è "LOBBY" 
-            print("MODELLO CAMBIATO IN", data.get("current_state"))
-            #if self.model.current_state == "LOBBY" or self.model.current_state == "AWAIT_JOIN":
-            #if data.get("ingr_id") is not None:
-            self.model.ingr_id = data.get("ingr_id")   
+            new_state = data.get("current_state")
+            if new_state == "SCORE":
+                scores = data.get("scores")
+                if scores:
+                    self.model.states["SCORE"].scores = scores
+
+            self.model.set_state(new_state)
+            print("MODELLO CAMBIATO IN", new_state)
+            self.model.ingr_id = data.get("ingr_id")  

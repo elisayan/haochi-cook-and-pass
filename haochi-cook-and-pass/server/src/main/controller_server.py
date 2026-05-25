@@ -238,11 +238,36 @@ async def handle_plate_complete(websocket, current_player, data):
     # e anche del numero di piatti composti e del numero di essi per ogni tipo
     # in modo da realizzare il report
 
+async def handle_game_over(websocket, current_player, data):
+    #passare i punteggi finali al client per far visualizzare la schermata di fine gioco con i punteggi
+    room = room_manager.get_room(current_player.room_code)
+
+    team_dishes = sum(player.num_plates_completed for player in room.players.values())
+    team_points = sum(player.score for player in room.players.values())
+
+    response = json.dumps({
+        "action": "CHANGE_MODEL_STATE",
+        "current_state": "SCORE",
+        "scores": {
+            "player": {
+                "name": current_player.ingr_id,
+                "dishes": current_player.num_plates_completed,
+                "points": current_player.score,
+            },
+            "team": {
+                "dishes": team_dishes,
+                "points": team_points,
+            }
+        }
+    })
+    await websocket.send(response)
+
 ACTION_HANDLERS = {
     "START_GAME": handle_start_game,
     "JOIN_ROOM": handle_join_room,
     "QUIT_ROOM": handle_quit_room,
     "START_PLAYING": handle_start_playing,
     "PASS_INGREDIENT": handle_pass_ingredient,
-    "PLATE_COMPLETE": handle_plate_complete
+    "PLATE_COMPLETE": handle_plate_complete,
+    "GAME_OVER": handle_game_over
 }
