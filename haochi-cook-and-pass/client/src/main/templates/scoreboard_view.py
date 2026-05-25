@@ -15,7 +15,7 @@ def draw(screen, title_font, font, rects, back_arrow_img, scores):
     you_rows = [
         ("Dishes", scores["player"]["dishes"]),
         ("Points", scores["player"]["points"]),
-        ("Level",  scores["player"]["level"]),
+        #("Level",  scores["player"]["level"]),
     ]
     you_card = pygame.Rect(card_x, 100, card_width, 50 + len(you_rows) * 30)
     pygame.draw.rect(screen, (255, 248, 240), you_card, border_radius=12)
