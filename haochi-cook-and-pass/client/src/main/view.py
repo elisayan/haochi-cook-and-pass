@@ -64,8 +64,8 @@ class GameView:
             #si prende il prossimo elemento da dover inserire nel piatto
             next_ingredient = None
             if len(model.recipes) > 0:
-                if model.recipes[0]:
-                    next_ingredient = model.recipes[0][0]
+                if model.recipes[0].ingredients:
+                    next_ingredient = model.recipes[0].ingredients[0]
                     next_ingredient.set_position(self.screen.get_width() / 2, next_ingredient.dimension[1] / 2)
             #calcolo della rotazione della lancetta
             tick_rotation = (model.passed_time / model.plate_time) * 360
