@@ -35,7 +35,7 @@ def seed():
         {"name": "avocado_toast", "ingredients": ["avocado", "bread"], "difficulty": "easy", "points": 20, "time": 60},
         {"name": "bacon_and_eggs", "ingredients": ["bacon", "egg"], "difficulty": "easy", "points": 20, "time": 60},
         {"name": "caprese_salad", "ingredients": ["basil", "tomato"], "difficulty": "easy", "points": 20, "time": 60},
-        {"name": "grilled_cheese", "ingredients": ["bread", "cheese"], "difficulty": "easy", "points": 20, "time": 60},
+        {"name": "grilled_egg", "ingredients": ["bread", "fried_egg"], "difficulty": "easy", "points": 20, "time": 60},
         {"name": "broccoli_stir_fry", "ingredients": ["broccoli", "carrot", "onion"], "difficulty": "medium", "points": 30, "time": 120},
         {"name": "bacon_french_toast", "ingredients": ["bread", "bacon", "egg"], "difficulty": "medium", "points": 30, "time": 120},
         {"name": "pizza_margherita", "ingredients": ["pizza_pie", "tomato_soup", "mozzarella", "basil"], "difficulty": "hard", "points": 40, "time": 180}

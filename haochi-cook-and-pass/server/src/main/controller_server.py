@@ -1,4 +1,5 @@
 import json
+import random
 
 from .db.db_manager import db
 from .connection_manager import manager
@@ -6,6 +7,10 @@ from .room_manager import RoomManager
 from .room import Room
 
 room_manager = RoomManager()
+levels_setting = {"level_0": {"easy": 2, "medium": 1, "hard": 0},
+                   "level_1": {"easy": 2, "medium": 2, "hard": 0},
+                   "level_2": {"easy": 1, "medium": 2, "hard": 1}
+                 }
 
 async def handle_start_game(websocket, current_player, data):
     room = room_manager.create_room() 
@@ -183,16 +188,52 @@ async def handle_start_playing(websocket, current_player, data):
         "action": "CHANGE_MODEL_STATE", 
         "current_state": "PLAYING",
     }), include_only=ws_players_in_game)
+    await handle_start_level(websocket, current_player, data)
     #TO DO:
-    # @ pensare a come distribuire i piatti da completare ai giocatori attraverso STARTING_PLATES
+    # @ pensare a come distribuire i piatti da completare ai giocatori attraverso STARTING_RECIPES
     # @ pensare a come distribuire tutti gli ingredienti dei piatti tra i vari giocatori attraverso messaggio STARTING_INGREDIENTS
-
-    recipes = db.get_recipes_by_level("easy") #TO DO prendere il livello della stanza
-    await manager.broadcast(json.dumps({
-        "action": "STARTING_PLATES",
-        "plates": recipes
-    }), include_only=ws_players_in_game)
         
+async def handle_start_level(websocket, current_player, data):
+    room = room_manager.get_room(current_player.room_code)
+    level_setting = levels_setting[f"level_{room.curr_level}"]
+    if level_setting:
+        shared_ingredients_in_play = [] #lista di ingredienti che il server deve distribuire tra i giocatori
+        #Per ogni giocatore si estraggono dal db le ricette che deve comporre
+        for player in room.players.values(): 
+            player_recipes = [] 
+            for difficulty in ["easy", "medium", "hard"]:
+                number_rec = level_setting[difficulty]
+                if number_rec > 0:
+                    #tornata lista di ricette
+                    recipes = db.get_random_recipes_by_difficulty(difficulty, number_rec)
+                    player_recipes.extend(recipes)
+                    for recipe in recipes:
+                        shared_ingredients_in_play.extend(recipe["ingredients"])
+            random.shuffle(player_recipes)
+            current_player_recipes_msg = json.dumps({
+            "action": "STARTING_RECIPES", 
+            "recipes": player_recipes,
+            }) 
+            await player.websocket.send(current_player_recipes_msg)   
+            print(f"inviato al giocatore {player.ingr_id} le ricette {player_recipes}")     
+
+        # si procede distribuendo a tutti i giocatori gli ingredienti 
+        random.shuffle(shared_ingredients_in_play)
+        num_ingr_per_player = len(shared_ingredients_in_play) // len(room.players)
+        start_index = 0
+        for player in room.players.values():
+            end_index = min(start_index + num_ingr_per_player, len(shared_ingredients_in_play))
+            player_ingredients = shared_ingredients_in_play[start_index:end_index]
+            start_index = end_index
+            random.shuffle(player_ingredients)
+            current_player_ingredients_msg = json.dumps({
+            "action": "STARTING_INGREDIENTS", 
+            "ingredients": player_ingredients,
+            }) 
+            await player.websocket.send(current_player_ingredients_msg)
+            print(f"inviato al giocatore {player.ingr_id} le ricette {player_ingredients}")     
+    #else:
+        #TO DO @mandare messaggio a tutti i giocatori per passare all'interfaccia finale delle statistiche
 
 async def handle_pass_ingredient(websocket, current_player, data):
     #bisogna prendere la websocket del giocatore che si trova a sinistra o a destra a sinistra
@@ -229,50 +270,18 @@ async def handle_pass_ingredient(websocket, current_player, data):
 
 async def handle_plate_complete(websocket, current_player, data):
     room = room_manager.get_room(current_player.room_code)
-    
-    recipe_name = data.get("recipe_name")
-    if recipe_name:
-        room.current_level = db.get_recipe_level(recipe_name)
-
-    current_player.score += data.get("gained_score")
-    current_player.num_plates_completed += 1
-
     if data.get("finished_all_plates"):
+        #se il giocatore ha finito tutti i suoi piatti allora si verifica se tutti i giocaotori sono in attesa o se ancora c'è qualcuno che sta giocando (ha piatti da completare)
         room.num_waiting_players += 1
         if room.num_waiting_players == len(room.players):
-            # tutti i giocatori hanno finito i loro piatti → passa al livello successivo
+            # si deve passare al livello successivo
             # TO DO inviare STARTING_INGREDIENTS e STARTING_PLATES a tutti i giocatori
-            next_level = room.advance_level()
-            ws_all_players = [player.websocket for player in room.players.values()]
-            if next_level is None:
-                #tutti i livelli completati, fine partita
-                for player in room.players.values():
-                    team_dishes = sum(p.num_plates_completed for p in room.players.values())
-                    team_points = sum(p.score for p in room.players.values())
-                    await player.websocket.send(json.dumps({
-                        "action": "CHANGE_MODEL_STATE",
-                        "current_state": "SCORE",
-                        "scores": {
-                            "player": {
-                                "name": player.ingr_id,
-                                "dishes": player.num_plates_completed,
-                                "points": player.score
-                            },
-                            "team": {
-                                "dishes": team_dishes,
-                                "points": team_points,
-                                "level": room.current_level
-                            }
-                        }
-                    }))
-            else:
-                #passa al livello successivo
-                room.num_waiting_players = 0
-                recipes = db.get_recipes_by_level(next_level)
-                await manager.broadcast(json.dumps({
-                    "action": "STARTING_PLATES",
-                    "plates": recipes
-                }), include_only=ws_all_players)
+            room.curr_level += 1
+            await handle_start_level(websocket, current_player, data)
+            pass
+    current_player.score += data.get("gained_score")   
+    print("IL piatto è arrivato in cucina")
+    current_player.num_plates_completed += 1
     # TO DO  
     # si può anche pensare di tenere traccia attraverso un dizionario del numero di ciascun tupo di ingrediente usato dal giocatore
     # e anche del numero di piatti composti e del numero di essi per ogni tipo
@@ -284,5 +293,5 @@ ACTION_HANDLERS = {
     "QUIT_ROOM": handle_quit_room,
     "START_PLAYING": handle_start_playing,
     "PASS_INGREDIENT": handle_pass_ingredient,
-    "PLATE_COMPLETE": handle_plate_complete,
+    "PLATE_COMPLETE": handle_plate_complete
 }

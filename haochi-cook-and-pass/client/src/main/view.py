@@ -68,7 +68,7 @@ class GameView:
                     next_ingredient = model.recipes[0].ingredients[0]
                     next_ingredient.set_position(self.screen.get_width() / 2, next_ingredient.dimension[1] / 2)
             #calcolo della rotazione della lancetta
-            tick_rotation = (model.passed_time / model.plate_time) * 360
+            tick_rotation = (model.passed_time /  model.current_time) * 360 #model.plate_time) * 360
 
             play_view.draw_game(self.screen,
                                 model.plate, 
