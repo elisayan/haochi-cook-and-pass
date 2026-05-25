@@ -141,6 +141,7 @@ class Element ():
         self.position = np.array([float(x), float(y)])            
 
 class Ingredient(Element):
+    #TODO controllare se è necessario mantenere score in Ingredient
     def __init__(self, image_name, dimension:tuple, position, score):
         super().__init__(image_name, dimension, position)
         self.is_in_plate = False
@@ -227,7 +228,7 @@ class PassIngredientMsg(PartialMessage):
         }
 
 class CompletePlateMsg(PartialMessage):
-    def __init__(self, list_ingr, total_score, finished_all_plates = False):
+    def __init__(self, list_ingr, total_score, recipe_name, finished_all_plates = False):
         list_names = []
         for ingr in list_ingr:
             list_names.append(ingr.name)
@@ -236,14 +237,16 @@ class CompletePlateMsg(PartialMessage):
             "completed_plate": list_names,
             "finished_all_plates": finished_all_plates,
             "gained_score": total_score,
+            "recipe_name": recipe_name,
             "action": "PLATE_COMPLETE"
         }
 
 class Recipe():
-    def __init__(self, list_ingredients, time, score):
+    def __init__(self, list_ingredients, time, score, name):
         self.ingredients = list_ingredients
         self.score = score
         self.time = time
+        self.name = name
 
 
                 
