@@ -8,9 +8,16 @@ class ScoreboardState(BaseState):
             "home_btn": pygame.Rect(0, 0, 160, 45)
         }
         self.scores = {
-            "Player1": 150,
-            "Player2": 120,
-            "Player3": 90
+            "player": {
+                "name": "Elisa",
+                "dishes": 4,
+                "points": 48,
+                "level": 3
+            },
+            "team": {
+                "dishes": 8,
+                "points": 96
+            }
         }  # Dizionario per memorizzare i punteggi dei giocatori
 
     def handle_input(self, event, send_queue, model):
