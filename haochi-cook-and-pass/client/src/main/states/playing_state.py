@@ -161,6 +161,7 @@ class PlayingState(BaseState):
             print("Il player avvisa forse il server o anche no")
             #CAMBIO GESTIONE SCORE per il momento lo si manda al server che aumenta lo score del giocatore
             plate_total_score = self.recipes[0].score #aggiunta
+            recipe_name = self.recipes[0].name if hasattr(self.recipes[0], "name") else "unknown_recipe"
             #for ingr in self.current_recipe:
             #    total_score += ingr.score #calcolo del punteggio ottenuto dal piatto completato
             self.score += plate_total_score    
@@ -169,12 +170,12 @@ class PlayingState(BaseState):
             if len(self.recipes) == 0:
                 print("Lo score del giocatore è: ", self.score)
                 print("Il player ha finito le sue ricette, deve mandare un messaggino al server per avvisarlo che è in attesa anche se ancora può dover aspettare gli altri e passare ingredienti")
-                self.send_msg += [CompletePlateMsg(self.current_recipe.copy(), plate_total_score, finished_all_plates = True)]
+                self.send_msg += [CompletePlateMsg(self.current_recipe.copy(), plate_total_score, recipe_name, finished_all_plates = True)]
                 #TO DO si chiude il timer
                 self.stop_clock() 
                 self.passed_time = 0.0
             else: #caso inviato il piatto ma ce ne sono altri
-                self.send_msg += [CompletePlateMsg(self.current_recipe.copy(), plate_total_score)]
+                self.send_msg += [CompletePlateMsg(self.current_recipe.copy(), plate_total_score, recipe_name)]
                 self.cook_timer.reset_alarm_time(self.recipes[0].time) #aggiunta
             #si passa al prossimo piatto              
             self.current_recipe = []
@@ -230,7 +231,14 @@ class PlayingState(BaseState):
 #sistemare
     #metodo per settare la lista di piatti all'inizio del livello invocato quando arriva la lista di ricette dal server
     def add_starting_recipes(self, list_recipes): #list_recipes formata da lista di ricette dove ogni ricetta ha lista (nome_igr, dimensione, score), score e time
-        self.recipes = [Recipe([Ingredient('shrimp2.PNG', (30, 30), (0, 0), 1.5), Ingredient('ingred3.PNG', (30, 30), (0, 0), 3.5)], 270, 20), Recipe([Ingredient('lemon.PNG', (30, 30), (0, 0), 2.0)], 240, 5)]
+        #self.recipes = [Recipe([Ingredient('shrimp2.PNG', (30, 30), (0, 0), 1.5), Ingredient('ingred3.PNG', (30, 30), (0, 0), 3.5)], 270, 20), Recipe([Ingredient('lemon.PNG', (30, 30), (0, 0), 2.0)], 240, 5)]
+        self.recipes = []
+        for r in list_recipes:
+            self.ingredients = [
+                Ingredient(ingr + ".PNG", (30, 30), (0, 0), 1.0)
+                for ingr in r["ingredients"]
+            ]
+            self.recipes.append(Recipe(self.ingredients.copy(), r["time"], r["points"], r["name"]))
         #si fa iniziare il timer
         self.start_game() 
     #def draw(self, screen):

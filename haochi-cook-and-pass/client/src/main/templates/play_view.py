@@ -77,9 +77,16 @@ def draw_score(screen, score, width):
     screen.blit(score_surface, (x_pos, margin))    
 
 def _render_element(screen, path, position, dimension, rotation = 0, pivot_offset = None):
-    # 1. Caricamento e scalatura
-    surface = pygame.image.load(str(path)).convert_alpha()
-    surface = pygame.transform.scale(surface, dimension)
+    path_obj = Path(path)
+
+    if not path_obj.exists() and "ingredients" not in str(path_obj):
+        path_obj = path_obj.parent / "ingredients" / path_obj.name
+
+    scale_factor = 1.3
+    new_dimension = [int(dimension[0] * scale_factor), int(dimension[1] * scale_factor)]
+
+    surface = pygame.image.load(str(path_obj)).convert_alpha()
+    surface = pygame.transform.scale(surface, new_dimension)
     
     if rotation != 0:
         # 2. Rotazione della superficie
