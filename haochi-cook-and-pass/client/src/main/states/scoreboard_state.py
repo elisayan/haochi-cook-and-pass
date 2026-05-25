@@ -8,7 +8,7 @@ class ScoreboardState(BaseState):
             "home_btn": pygame.Rect(0, 0, 160, 45)
         }
         self.scores = {
-            "player": {"name": "", "dishes": 0, "points": 0, "level": "None"},
+            "player": {"name": "", "dishes": 0, "points": 0},
             "team": {"dishes": 0, "points": 0}
         }
 
