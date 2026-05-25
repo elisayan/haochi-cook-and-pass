@@ -22,7 +22,7 @@ class GameModel:
             "SCORE": ScoreboardState(self)
         }
         #to do rimpostare a MENU
-        self.current_state_key = "SCORE" #"PLAYING" #"MENU"
+        self.current_state_key = "MENU" #"PLAYING" #"MENU"
 
     @property
     def current_state(self):
