@@ -61,7 +61,7 @@ class GameController:
             self.model.current_state.add_starting_ingredients(data.get("ingredients"))       
         elif data.get("action") == "STARTING_PLATES":
             #lista di tuple (nome, dimensione, score)
-            self.model.current_state.add_starting_plates(data.get("plates"))
+            self.model.current_state.add_starting_recipes(data.get("plates"))
         #messaggio inviato per la lobby (sala di attesa)      
         #if data.get("action") == "PLAYERS_IN_GAME":
             #-lista dei giocatori (loro id)
