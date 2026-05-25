@@ -202,6 +202,8 @@ class CountdownThread(threading.Thread):
 
     def get_current_time(self):
         """Ritorna il valore attuale del timer"""
+        #print("clock_time", self.clock_time)
+        #print("tempo trascorso", round(self.curr_time, 1))
         return round(self.curr_time, 1)
     
     def reset_timer(self):
@@ -236,5 +238,14 @@ class CompletePlateMsg(PartialMessage):
             "gained_score": total_score,
             "action": "PLATE_COMPLETE"
         }
+
+class Recipe():
+    def __init__(self, list_ingredients, time, score):
+        self.ingredients = list_ingredients
+        self.score = score
+        self.time = time
+
+
+                
         
 
