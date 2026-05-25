@@ -14,7 +14,7 @@ class GameModel:
         
         # Dizionario degli stati
         self.states = {
-            "MENU": MenuState(),
+            "MENU": MenuState(self),
             "LOBBY": LobbyState(self),
             "JOIN_INPUT": JoinState(self),
             "AWAIT_JOIN": AwaitJoinState(self),

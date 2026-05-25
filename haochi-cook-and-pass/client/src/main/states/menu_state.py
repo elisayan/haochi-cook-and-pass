@@ -3,9 +3,9 @@ import pygame
 import json
 from .base_state import BaseState
 
-class MenuState():
-    def __init__(self):
-        #super().__init__(game)
+class MenuState(BaseState):
+    def __init__(self, model):
+        super().__init__(model)
         self.sub_menu = "MAIN"
         self.font = pygame.font.SysFont("Arial", 24)
 
@@ -30,6 +30,7 @@ class MenuState():
                     self.sub_menu = "ROOM_CHOICE"
                 elif self.rects["tutorial"].collidepoint(event.pos):
                     print("TUTORIAL")
+                    self.sub_menu = "TUTORIAL"
                 elif self.rects["exit"].collidepoint(event.pos):
                     print("CHIUSURA IN CORSO...")
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
@@ -42,3 +43,7 @@ class MenuState():
                     model.switch_to("JOIN_INPUT")
                 elif self.rects.get("back_arrow") and self.rects["back_arrow"].collidepoint(event.pos):
                     self.sub_menu = "MAIN"
+            elif self.sub_menu == "TUTORIAL":
+                if self.rects.get("back_arrow") and self.rects["back_arrow"].collidepoint(event.pos):
+                    self.sub_menu = "MAIN"
+
