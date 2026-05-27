@@ -8,7 +8,7 @@ def draw_game(screen, plate, list_elem, current_recipe, next_ingredient, show_er
         # Sfondo
         path_bg = Path(__file__).resolve().parent.parent / "images" / "Background.png"
         background = pygame.image.load(str(path_bg)).convert_alpha()
-        background = pygame.transform.scale(background, (width, height)) 
+        background = pygame.transform.smoothscale(background, (width, height))
         screen.blit(background, (0, 0))
         
         path_arrow = Path(__file__).resolve().parent.parent / "images" / "arrow.png"
@@ -86,10 +86,9 @@ def _render_element(screen, path, position, dimension, rotation = 0, pivot_offse
     new_dimension = [int(dimension[0] * scale_factor), int(dimension[1] * scale_factor)]
 
     surface = pygame.image.load(str(path_obj)).convert_alpha()
-    surface = pygame.transform.scale(surface, new_dimension)
+    surface = pygame.transform.smoothscale(surface, new_dimension)
     
     if rotation != 0:
-        # 2. Rotazione della superficie
         surface = pygame.transform.rotate(surface, rotation)
         
         if pivot_offset is not None:
@@ -105,8 +104,6 @@ def _render_element(screen, path, position, dimension, rotation = 0, pivot_offse
             # Rotazione standard centrata
             rect = surface.get_rect(center=position)
     else:
-        # 3. Nessuna rotazione: calcolo standard
         rect = surface.get_rect(center=position)
     
-    # 4. Disegno finale
     screen.blit(surface, rect.topleft)
