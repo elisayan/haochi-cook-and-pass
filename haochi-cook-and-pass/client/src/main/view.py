@@ -9,6 +9,7 @@ class GameView:
         self.font = pygame.font.SysFont("Arial", 24)
         self.title_font = pygame.font.SysFont("Comic Sans MS", 40, bold=True)
         self.code_font = pygame.font.SysFont("Arial", 38, bold=True)
+        self.small_font = pygame.font.Font(None, 22)
         self.base_path = Path(__file__).resolve().parent
 
         #path immagini 
@@ -82,6 +83,6 @@ class GameView:
                                 tick_rotation)   
         elif state == "SCORE":
             self.screen.blit(self.general_bg, (0, 0))
-            scoreboard_view.draw(self.screen, self.title_font, self.font, model.current_state.rects, self.back_arrow_img, model.current_state.scores)
+            scoreboard_view.draw(self.screen, self.title_font, self.font, self.small_font, model.current_state.rects, model.current_state.scores)        
         #todo aggiungere altri stati
         pygame.display.flip()
