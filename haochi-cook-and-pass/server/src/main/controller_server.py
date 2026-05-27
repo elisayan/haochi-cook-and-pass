@@ -219,17 +219,25 @@ async def handle_start_level(websocket, current_player, data):
 
         # si procede distribuendo a tutti i giocatori gli ingredienti 
         random.shuffle(shared_ingredients_in_play)
-        num_ingr_per_player = len(shared_ingredients_in_play) // len(room.players)
+
+        players = list(room.players.values())
+        num_players = len(players)
+
+        base = len(shared_ingredients_in_play) // num_players
+        remainder = len(shared_ingredients_in_play) % num_players
+
         start_index = 0
-        for player in room.players.values():
-            end_index = min(start_index + num_ingr_per_player, len(shared_ingredients_in_play))
+
+        for i, player in enumerate(players):
+            extra = 1 if i < remainder else 0
+            end_index = start_index + base + extra
             player_ingredients = shared_ingredients_in_play[start_index:end_index]
             start_index = end_index
             random.shuffle(player_ingredients)
             current_player_ingredients_msg = json.dumps({
-            "action": "STARTING_INGREDIENTS", 
-            "ingredients": player_ingredients,
-            }) 
+                "action": "STARTING_INGREDIENTS",
+                "ingredients": player_ingredients,
+            })
             await player.websocket.send(current_player_ingredients_msg)
             print(f"inviato al giocatore {player.ingr_id} le ricette {player_ingredients}")     
     #else:
@@ -270,6 +278,9 @@ async def handle_pass_ingredient(websocket, current_player, data):
 
 async def handle_plate_complete(websocket, current_player, data):
     print(f"DEBUG handle_plate_complete: finished_all_plates={data.get('finished_all_plates')}, gained_score={data.get('gained_score')}")
+    current_player.score += data.get("gained_score", 0)
+    print("IL piatto è arrivato in cucina")
+    current_player.num_plates_completed += 1
     room = room_manager.get_room(current_player.room_code)
     if data.get("finished_all_plates"):
         #se il giocatore ha finito tutti i suoi piatti allora si verifica se tutti i giocaotori sono in attesa o se ancora c'è qualcuno che sta giocando (ha piatti da completare)
@@ -306,9 +317,7 @@ async def handle_plate_complete(websocket, current_player, data):
                             }
                         }
                     }))
-    current_player.score += data.get("gained_score")   
-    print("IL piatto è arrivato in cucina")
-    current_player.num_plates_completed += 1
+
     # TO DO  
     # si può anche pensare di tenere traccia attraverso un dizionario del numero di ciascun tupo di ingrediente usato dal giocatore
     # e anche del numero di piatti composti e del numero di essi per ogni tipo
