@@ -232,8 +232,28 @@ async def handle_start_level(websocket, current_player, data):
             }) 
             await player.websocket.send(current_player_ingredients_msg)
             print(f"inviato al giocatore {player.ingr_id} le ricette {player_ingredients}")     
-    #else:
+    else:
         #TO DO @mandare messaggio a tutti i giocatori per passare all'interfaccia finale delle statistiche
+        print("Non ci sono più livelli disponibili, la partita è finita!")
+        for player in room.players.values():
+                    team_dishes = sum(p.num_plates_completed for p in room.players.values())
+                    team_points = sum(p.score for p in room.players.values())
+                    await player.websocket.send(json.dumps({
+                        "action": "CHANGE_MODEL_STATE",
+                        "current_state": "SCORE",
+                        "scores": {
+                            "player": {
+                                "name": player.ingr_id,
+                                "dishes": player.num_plates_completed,
+                                "points": player.score
+                            },
+                            "team": {
+                                "dishes": team_dishes,
+                                "points": team_points,
+                                "level": room.current_level
+                            }
+                        }
+                    }))
 
 async def handle_pass_ingredient(websocket, current_player, data):
     #bisogna prendere la websocket del giocatore che si trova a sinistra o a destra a sinistra
