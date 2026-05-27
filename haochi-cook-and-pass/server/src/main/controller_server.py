@@ -232,28 +232,8 @@ async def handle_start_level(websocket, current_player, data):
             }) 
             await player.websocket.send(current_player_ingredients_msg)
             print(f"inviato al giocatore {player.ingr_id} le ricette {player_ingredients}")     
-    else:
+    #else:
         #TO DO @mandare messaggio a tutti i giocatori per passare all'interfaccia finale delle statistiche
-        print("Non ci sono più livelli disponibili, la partita è finita!")
-        for player in room.players.values():
-                    team_dishes = sum(p.num_plates_completed for p in room.players.values())
-                    team_points = sum(p.score for p in room.players.values())
-                    await player.websocket.send(json.dumps({
-                        "action": "CHANGE_MODEL_STATE",
-                        "current_state": "SCORE",
-                        "scores": {
-                            "player": {
-                                "name": player.ingr_id,
-                                "dishes": player.num_plates_completed,
-                                "points": player.score
-                            },
-                            "team": {
-                                "dishes": team_dishes,
-                                "points": team_points,
-                                "level": room.current_level
-                            }
-                        }
-                    }))
 
 async def handle_pass_ingredient(websocket, current_player, data):
     #bisogna prendere la websocket del giocatore che si trova a sinistra o a destra a sinistra
@@ -289,16 +269,43 @@ async def handle_pass_ingredient(websocket, current_player, data):
 
 
 async def handle_plate_complete(websocket, current_player, data):
+    print(f"DEBUG handle_plate_complete: finished_all_plates={data.get('finished_all_plates')}, gained_score={data.get('gained_score')}")
     room = room_manager.get_room(current_player.room_code)
     if data.get("finished_all_plates"):
         #se il giocatore ha finito tutti i suoi piatti allora si verifica se tutti i giocaotori sono in attesa o se ancora c'è qualcuno che sta giocando (ha piatti da completare)
         room.num_waiting_players += 1
+        print(f"DEBUG: {room.num_waiting_players}/{len(room.players)} giocatori in attesa")
         if room.num_waiting_players == len(room.players):
+            room.num_waiting_players = 0
             # si deve passare al livello successivo
             # TO DO inviare STARTING_INGREDIENTS e STARTING_PLATES a tutti i giocatori
             room.curr_level += 1
-            await handle_start_level(websocket, current_player, data)
-            pass
+            next_level_key = f"level_{room.curr_level}"
+            
+            if next_level_key in levels_setting:
+                await handle_start_level(websocket, current_player, data)
+            else:
+                # Fine partita — invia SCORE a tutti
+                print("DEBUG: Partita finita! Invio schermata score.")
+                team_dishes = sum(p.num_plates_completed for p in room.players.values())
+                team_points = sum(p.score for p in room.players.values())
+                for player in room.players.values():
+                    await player.websocket.send(json.dumps({
+                        "action": "CHANGE_MODEL_STATE",
+                        "current_state": "SCORE",
+                        "scores": {
+                            "player": {
+                                "name": player.ingr_id,
+                                "dishes": player.num_plates_completed,
+                                "points": player.score
+                            },
+                            "team": {
+                                "dishes": team_dishes,
+                                "points": team_points,
+                                "level": room.curr_level
+                            }
+                        }
+                    }))
     current_player.score += data.get("gained_score")   
     print("IL piatto è arrivato in cucina")
     current_player.num_plates_completed += 1
