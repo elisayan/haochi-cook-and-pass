@@ -219,27 +219,23 @@ async def handle_start_level(websocket, current_player, data):
 
         # si procede distribuendo a tutti i giocatori gli ingredienti 
         random.shuffle(shared_ingredients_in_play)
-
-        players = list(room.players.values())
-        num_players = len(players)
-
-        base = len(shared_ingredients_in_play) // num_players
+        num_players = len(room.players)
         remainder = len(shared_ingredients_in_play) % num_players
-
+        #num_ingr_per_player = len(shared_ingredients_in_play) // len(room.players)
         start_index = 0
-
-        for i, player in enumerate(players):
+        for i, player in enumerate(room.players.values()):
             extra = 1 if i < remainder else 0
-            end_index = start_index + base + extra
+            #end_index = min(start_index + num_ingr_per_player, len(shared_ingredients_in_play))
+            end_index = start_index + (len(shared_ingredients_in_play)//num_players)+extra
             player_ingredients = shared_ingredients_in_play[start_index:end_index]
             start_index = end_index
             random.shuffle(player_ingredients)
             current_player_ingredients_msg = json.dumps({
-                "action": "STARTING_INGREDIENTS",
-                "ingredients": player_ingredients,
-            })
+            "action": "STARTING_INGREDIENTS", 
+            "ingredients": player_ingredients,
+            }) 
             await player.websocket.send(current_player_ingredients_msg)
-            print(f"inviato al giocatore {player.ingr_id} le ricette {player_ingredients}")     
+            print(f"inviato al giocatore {player.ingr_id} le ricette {player_ingredients}")         
     #else:
         #TO DO @mandare messaggio a tutti i giocatori per passare all'interfaccia finale delle statistiche
 
