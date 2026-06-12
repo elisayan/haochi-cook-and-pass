@@ -8,7 +8,7 @@ def draw(screen, title_font, font, small_font, rects, scores):
     card_width = 400
     card_x = cx - card_width // 2
 
-    you_rows = [("Dishes", scores["player"]["dishes"]), ("Points", scores["player"]["points"])]
+    you_rows = [("Dishes", scores["player"]["dishes"]), ("Points", scores["player"]["points"]), ("Passing Bonus", scores["player"]["passing_bonus"])]
     team_rows = [("Dishes", scores["team"]["dishes"]), ("Points", scores["team"]["points"])]
 
     # Titolo fisso in alto

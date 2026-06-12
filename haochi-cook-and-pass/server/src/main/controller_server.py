@@ -220,24 +220,34 @@ async def handle_start_level(websocket, current_player, data):
         # si procede distribuendo a tutti i giocatori gli ingredienti 
         random.shuffle(shared_ingredients_in_play)
         num_players = len(room.players)
-        remainder = len(shared_ingredients_in_play) % num_players
+        
+        weights = [random.uniform(0.5, 1.5) for _ in range(num_players)]
+        total_weight = sum(weights)
+        #remainder = len(shared_ingredients_in_play) % num_players
         #num_ingr_per_player = len(shared_ingredients_in_play) // len(room.players)
         start_index = 0
-        for i, player in enumerate(room.players.values()):
-            extra = 1 if i < remainder else 0
-            #end_index = min(start_index + num_ingr_per_player, len(shared_ingredients_in_play))
-            end_index = start_index + (len(shared_ingredients_in_play)//num_players)+extra
-            player_ingredients = shared_ingredients_in_play[start_index:end_index]
-            start_index = end_index
+        players = list(room.players.values())
+        for i, player in enumerate(players):
+            # se è l'ultimo giocatore prende tutto il resto
+            if i == num_players - 1:
+                player_ingredients = shared_ingredients_in_play[start_index:]
+            else:
+                # calcola quanti ingredienti spettano in base al peso
+                count = round(len(shared_ingredients_in_play) * (weights[i] / total_weight))
+                count = max(1, count)  # almeno 1 ingrediente a testa
+                end_index = min(start_index + count, len(shared_ingredients_in_play))
+                player_ingredients = shared_ingredients_in_play[start_index:end_index]
+                start_index = end_index
+
             random.shuffle(player_ingredients)
             current_player_ingredients_msg = json.dumps({
-            "action": "STARTING_INGREDIENTS", 
-            "ingredients": player_ingredients,
-            }) 
+                "action": "STARTING_INGREDIENTS",
+                "ingredients": player_ingredients,
+            })
             await player.websocket.send(current_player_ingredients_msg)
-            print(f"inviato al giocatore {player.ingr_id} le ricette {player_ingredients}")         
-    #else:
-        #TO DO @mandare messaggio a tutti i giocatori per passare all'interfaccia finale delle statistiche
+            print(f"inviato al giocatore {player.ingr_id} gli ingredienti {player_ingredients}")
+            #else:
+                #TO DO @mandare messaggio a tutti i giocatori per passare all'interfaccia finale delle statistiche
 
 async def handle_pass_ingredient(websocket, current_player, data):
     #bisogna prendere la websocket del giocatore che si trova a sinistra o a destra a sinistra
@@ -294,9 +304,16 @@ async def handle_plate_complete(websocket, current_player, data):
             else:
                 # Fine partita — invia SCORE a tutti
                 print("DEBUG: Partita finita! Invio schermata score.")
+
+                for player in room.players.values():
+                    passing_bonus = player.num_passed_ingr * 10
+                    player.score += passing_bonus
+
                 team_dishes = sum(p.num_plates_completed for p in room.players.values())
                 team_points = sum(p.score for p in room.players.values())
+
                 for player in room.players.values():
+                    base_score = player.score - (player.num_passed_ingr * 10) 
                     await player.websocket.send(json.dumps({
                         "action": "CHANGE_MODEL_STATE",
                         "current_state": "SCORE",
@@ -304,7 +321,8 @@ async def handle_plate_complete(websocket, current_player, data):
                             "player": {
                                 "name": player.ingr_id,
                                 "dishes": player.num_plates_completed,
-                                "points": player.score
+                                "points": base_score,
+                                "passing_bonus": player.num_passed_ingr * 10
                             },
                             "team": {
                                 "dishes": team_dishes,
