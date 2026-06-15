@@ -93,8 +93,9 @@ class GameController:
         elif data.get("action") == "PLAYER_DISCONNECTED":
             ingr_id = data.get("player_ingr_id")
             print(f"Giocatore {ingr_id} disconnesso durante la partita")
-        elif data.get("action") == "NEW_INGREDIENTS_BATCH":   # ← aggiungere questo
-            for ingr_name in data.get("ingredients", []):
-                self.model.current_state.add_new_ingredient(
-                    f"{ingr_name}.PNG", (50, 50), 0, "BOTTOM"
-                )
+        elif data.get("action") == "NEW_INGREDIENTS_BATCH":
+            if self.model.current_state_key == "PLAYING":
+                for ingr_name in data.get("ingredients", []):
+                    self.model.current_state.add_new_ingredient(
+                        f"{ingr_name}.PNG", (50, 50), 0, "BOTTOM"
+                    )
