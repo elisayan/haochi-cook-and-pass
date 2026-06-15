@@ -65,6 +65,12 @@ class Room:
         elif 2 <= player_count <= 8:
             self.state = RoomState.READY
 
+    def set_in_game(self):
+        self.state = RoomState.IN_GAME
+
+    def check_all_waiting(self):
+        return self.num_waiting_players > 0 and self.num_waiting_players >= len(self.players) - 1
+
     #settata in modo casuale TO DO fare settare il giro al creatore della stanza 
     def set_random_players_position_in_play(self):
         list_players = list(self.players.values())
