@@ -46,8 +46,8 @@ def seed():
         {"name": "broccoli_stir_fry", "ingredients": ["broccoli", "carrot", "onion"], "difficulty": "medium", "points": 30, "time": 120},
         {"name": "fish_and_salad", "ingredients": ["fish", "salad", "lemon"], "difficulty": "medium", "points": 30, "time": 120},
         {"name": "nachos_platter", "ingredients": ["nachos", "chili", "avocado"], "difficulty": "medium", "points": 30, "time": 120},
-        {"name": "mushroom_omelette", "ingredients": ["egg", "mushroom", "onion"], "difficulty": "medium", "points": 30, "time": 120},
-        {"name": "raw_shrimp_cobb", "ingredients": ["raw_shrimp", "cobb", "lemon"], "difficulty": "medium", "points": 30, "time": 120},
+        {"name": "mushroom_omelette", "ingredients": ["fried_egg", "mushroom", "onion"], "difficulty": "medium", "points": 30, "time": 120},
+        {"name": "shrimp_cobb", "ingredients": ["shrimp", "cobb", "lemon"], "difficulty": "medium", "points": 30, "time": 120},
         {"name": "mozzarella_tomato_toast", "ingredients": ["bread", "mozzarella", "tomato"], "difficulty": "medium", "points": 30, "time": 120},
         {"name": "broccoli_rice", "ingredients": ["broccoli", "rice", "carrot"], "difficulty": "medium", "points": 30, "time": 120},
 
@@ -56,9 +56,9 @@ def seed():
         {"name": "fish_tacos", "ingredients": ["fish", "avocado", "chili", "lemon", "salad"], "difficulty": "hard", "points": 40, "time": 180},
         {"name": "shrimp_stir_fry", "ingredients": ["shrimp", "broccoli", "onion", "rice"], "difficulty": "hard", "points": 40, "time": 180},
         {"name": "full_breakfast", "ingredients": ["bread", "bacon", "fried_egg", "mushroom", "tomato"], "difficulty": "hard", "points": 40, "time": 180},
-        {"name": "cobb_salad", "ingredients": ["cobb", "bacon", "egg", "avocado", "tomato"], "difficulty": "hard", "points": 40, "time": 180},
+        {"name": "cobb_salad", "ingredients": ["cobb", "bacon", "fried_egg", "avocado", "tomato"], "difficulty": "hard", "points": 40, "time": 180},
         {"name": "spicy_rice_bowl", "ingredients": ["rice", "chili", "onion", "peas", "carrot"], "difficulty": "hard", "points": 40, "time": 180},
-        {"name": "seafood_platter", "ingredients": ["shrimp", "raw_shrimp", "fish", "lemon"], "difficulty": "hard", "points": 40, "time": 180},
+        {"name": "seafood_platter", "ingredients": ["shrimp", "shrimp", "fish", "lemon"], "difficulty": "hard", "points": 40, "time": 180},
     ]
 
     db.db["ingredients"].insert_many(ingredients)
