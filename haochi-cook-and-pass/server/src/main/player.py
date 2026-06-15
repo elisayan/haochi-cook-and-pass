@@ -17,6 +17,8 @@ class Player:
         self.ingr_id = None #identificativo dell'utente all'interno della partita come nome di un ingrediente
         self.num_plates_completed = 0
         self.num_passed_ingr = 0
+        self.current_ingredients = []
+        self.initial_ingredients = []
 
     def disconnect(self):
         self.state = PlayerState.DISCONNECTED
