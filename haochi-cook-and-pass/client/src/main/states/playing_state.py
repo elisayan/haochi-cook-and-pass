@@ -1,7 +1,7 @@
 import pygame
 import random
 from ..utilities import *
-#import json
+import json
 from .base_state import BaseState
 #from ..templates import menu_view
 
@@ -37,6 +37,12 @@ class PlayingState(BaseState):
     def handle_input(self, event, send_queue, model):
         if event.type == pygame.QUIT:
             self.stop_clock()
+            
+            remaining = self.get_current_ingrendients()
+            send_queue.put(json.dumps({
+                "action": "UPDATE_INGREDIENTS", 
+                "ingrendients": remaining
+            }))
             print("Chiudo il clock")
             running = False       
         elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -267,3 +273,6 @@ class PlayingState(BaseState):
             for ingr in self.ingredients:
                 list_ingredients_in_recipe.append(Ingredient(ingr_name + ".png", dimension, (0, 0) , score))
             self.recipes.append(Recipe)'''
+
+    def get_current_ingrendients(self):
+        return [ingr.name.removesuffix(".PNG") for ingr in self.ingredients]

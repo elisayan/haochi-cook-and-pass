@@ -6,7 +6,9 @@ import uuid
 from .db.db_manager import db
 from .connection_manager import manager
 from .controller_server import room_manager
-from .controller_server import ACTION_HANDLERS 
+from .controller_server import ACTION_HANDLERS
+from .controller_server import handle_player_disconnect
+from .room import RoomState
 
 async def register_client(websocket):
     player_id = str(uuid.uuid4())[:8]
@@ -33,7 +35,8 @@ async def register_client(websocket):
 
     except websockets.exceptions.ConnectionClosed:
         pass
-    finally:
+    finally: #gestione di quando accade una disconnessione, sia volontaria che involontaria
+        await handle_player_disconnect(player, player_id)
         room_manager.remove_player(player_id)
         manager.remove_player(websocket)
         print(f"Player {player_id} rimosso.")

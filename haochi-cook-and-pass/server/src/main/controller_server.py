@@ -4,7 +4,7 @@ import random
 from .db.db_manager import db
 from .connection_manager import manager
 from .room_manager import RoomManager
-from .room import Room
+from .room import Room, RoomState
 
 room_manager = RoomManager()
 levels_setting = {"level_0": {"easy": 2, "medium": 1, "hard": 0},
@@ -138,6 +138,21 @@ async def handle_quit_room(websocket, current_player, data):
     
     is_host_leaving = (current_player.id == room.host_id)
 
+    if room.state == RoomState.IN_GAME:
+        # redistribuisce ingredienti, notifica gli altri, gestisce fine partita
+        await handle_player_disconnect(current_player, current_player.id)
+        # se la room esiste ancora (non è stata rimossa da handle_player_disconnect)
+        # aggiorna l'host con il primo giocatore rimasto
+        remaining_room = room_manager.get_room(current_player.room_code)
+        if remaining_room and remaining_room.players:
+            remaining_room.host_id = next(iter(remaining_room.players.keys()))
+        current_player_response = json.dumps({
+            "action": "CHANGE_MODEL_STATE",
+            "current_state": "MENU",
+        })
+        await websocket.send(current_player_response)
+        return
+
     if is_host_leaving:
         print(f"Host player {current_player.id} is leaving the room.")
         response = json.dumps({
@@ -171,8 +186,6 @@ async def handle_quit_room(websocket, current_player, data):
     }) 
     await websocket.send(current_player_response)
     
-
-
 #Quando il giocatore che ha avviato la partita clicca START nella LOBBY:
 # - Si setta la posizione dei giocatori a quella ricevuta dal messaggio
 # - Si fa cambiare lo stato del model a tutti i giocatori in PLAYING 
@@ -180,6 +193,8 @@ async def handle_start_playing(websocket, current_player, data):
     print(f"DEBUG: Ricevuto ordine posizioni: {data.get('players_position')}")
     room = room_manager.get_room(current_player.room_code)
     room.set_players_position_in_play(data.get("players_position"))
+    #ADDED NEW CODE
+    room.set_in_game()
     #Si cambia lo stato di tutti i giocatori in PLAYING tutti i giocatori
     ws_players_in_game = []
     for player in room.players.values():
@@ -209,6 +224,7 @@ async def handle_start_level(websocket, current_player, data):
                     player_recipes.extend(recipes)
                     for recipe in recipes:
                         shared_ingredients_in_play.extend(recipe["ingredients"])
+            
             random.shuffle(player_recipes)
             current_player_recipes_msg = json.dumps({
             "action": "STARTING_RECIPES", 
@@ -240,6 +256,8 @@ async def handle_start_level(websocket, current_player, data):
                 start_index = end_index
 
             random.shuffle(player_ingredients)
+            player.initial_ingredients = player_ingredients.copy()
+            player.current_ingredients = player_ingredients.copy()
             current_player_ingredients_msg = json.dumps({
                 "action": "STARTING_INGREDIENTS",
                 "ingredients": player_ingredients,
@@ -248,6 +266,10 @@ async def handle_start_level(websocket, current_player, data):
             print(f"inviato al giocatore {player.ingr_id} gli ingredienti {player_ingredients}")
             #else:
                 #TO DO @mandare messaggio a tutti i giocatori per passare all'interfaccia finale delle statistiche
+
+async def handle_update_ingrendients(websocket, current_player, data):
+    current_player.current_ingredients = data.get("ingredients", [])
+    print(f"Aggiornati ingredienti di {current_player.ingr_id}: {current_player.current_ingredients}")
 
 async def handle_pass_ingredient(websocket, current_player, data):
     #bisogna prendere la websocket del giocatore che si trova a sinistra o a destra a sinistra
@@ -288,11 +310,16 @@ async def handle_plate_complete(websocket, current_player, data):
     print("IL piatto è arrivato in cucina")
     current_player.num_plates_completed += 1
     room = room_manager.get_room(current_player.room_code)
+    
+    if not room:
+        print(f"Room non trovata per il giocatore {current_player.ingr_id}, probabilmente chiusa dopo disconnessione")
+        return
+
     if data.get("finished_all_plates"):
         #se il giocatore ha finito tutti i suoi piatti allora si verifica se tutti i giocaotori sono in attesa o se ancora c'è qualcuno che sta giocando (ha piatti da completare)
         room.num_waiting_players += 1
         print(f"DEBUG: {room.num_waiting_players}/{len(room.players)} giocatori in attesa")
-        if room.num_waiting_players == len(room.players):
+        if room.num_waiting_players >= len(room.players):
             room.num_waiting_players = 0
             # si deve passare al livello successivo
             # TO DO inviare STARTING_INGREDIENTS e STARTING_PLATES a tutti i giocatori
@@ -336,6 +363,81 @@ async def handle_plate_complete(websocket, current_player, data):
     # si può anche pensare di tenere traccia attraverso un dizionario del numero di ciascun tupo di ingrediente usato dal giocatore
     # e anche del numero di piatti composti e del numero di essi per ogni tipo
     # in modo da realizzare il report
+    
+async def handle_player_disconnect(player, player_id):
+    room = room_manager.get_room(player.room_code)
+    if not room or room.state != RoomState.IN_GAME:
+        return
+
+    #distribuzione degli ingrendienti iniziali del player uscito
+    ingredients_to_redistribute = player.initial_ingredients or []
+
+    # Rimuovi subito il giocatore dalla room
+    room.remove_player(player_id)
+
+    if ingredients_to_redistribute:
+        remaining_players = list(room.players.values())
+        if remaining_players:
+            random.shuffle(ingredients_to_redistribute)
+            weights = [random.uniform(0.5, 1.5) for _ in remaining_players]
+            total_weight = sum(weights)
+            start_index = 0
+
+            for i, p in enumerate(remaining_players):
+                if i == len(remaining_players) - 1:
+                    chunk = ingredients_to_redistribute[start_index:]
+                else:
+                    count = round(len(ingredients_to_redistribute) * (weights[i] / total_weight))
+                    count = max(1, count)
+                    end_index = min(start_index + count, len(ingredients_to_redistribute))
+                    chunk = ingredients_to_redistribute[start_index:end_index]
+                    start_index = end_index
+                if chunk:
+                    await p.websocket.send(json.dumps({
+                        "action": "NEW_INGREDIENTS_BATCH",
+                        "ingredients": chunk
+                    }))
+
+    for p in room.players.values():
+        await p.websocket.send(json.dumps({
+            "action": "PLAYER_DISCONNECTED",
+            "player_ingr_id": player.ingr_id
+        }))
+
+    remaining = list(room.players.values())
+    if len(remaining) < 2:
+        if remaining:
+            sole_player = remaining[0]
+            team_dishes = sum(p.num_plates_completed for p in room.players.values())
+            team_points = sum(p.score for p in room.players.values())
+            passing_bonus = sole_player.num_passed_ingr * 10
+            sole_player.score += passing_bonus
+            base_score = sole_player.score - passing_bonus
+            await sole_player.websocket.send(json.dumps({
+                "action": "CHANGE_MODEL_STATE",
+                "current_state": "SCORE",
+                "scores": {
+                    "player": {
+                        "name": sole_player.ingr_id,
+                        "dishes": sole_player.num_plates_completed,
+                        "points": base_score,
+                        "passing_bonus": passing_bonus
+                    },
+                    "team": {
+                        "dishes": team_dishes,
+                        "points": team_points,
+                        "level": room.curr_level
+                    }
+                }
+            }))
+        room_manager.remove_room(player.room_code)
+        return
+
+    if room.check_all_waiting():
+        room.num_waiting_players = 0
+        room.curr_level += 1
+        if f"level_{room.curr_level}" in levels_setting:
+            await handle_start_level(None, player, {})
 
 ACTION_HANDLERS = {
     "START_GAME": handle_start_game,
@@ -343,5 +445,6 @@ ACTION_HANDLERS = {
     "QUIT_ROOM": handle_quit_room,
     "START_PLAYING": handle_start_playing,
     "PASS_INGREDIENT": handle_pass_ingredient,
-    "PLATE_COMPLETE": handle_plate_complete
+    "PLATE_COMPLETE": handle_plate_complete,
+    "UPDATE_INGREDIENTS": handle_update_ingrendients
 }
