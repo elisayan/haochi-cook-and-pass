@@ -1,10 +1,9 @@
 import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../server/src/main"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../server/src"))
 
-import pytest
 from unittest.mock import MagicMock
-from room import Room, RoomState
-from player import Player
+from main.room import Room, RoomState
+from main.player import Player
 
 def make_player(pid, ingr_id=None):
     ws = MagicMock()
