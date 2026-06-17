@@ -12,13 +12,12 @@ levels_setting = {"level_0": {"easy": 2, "medium": 1, "hard": 0},
                    "level_2": {"easy": 1, "medium": 2, "hard": 1}
                  }
 
+'''Method to create a new game for a player'''
 async def handle_start_game(websocket, current_player, data):
     room = room_manager.create_room() 
     game_code = room.code
     
     current_player.room_code = game_code
-    #Aggiungere anche un ingrediente id per il giocatore iniziale 
-    #current_player.ingr_id = db.get_ingredients()[0]
     random_ingredient = db.get_random_ingredient()
 
     if random_ingredient:
@@ -31,6 +30,7 @@ async def handle_start_game(websocket, current_player, data):
     room.add_player(current_player)
     print(f"Giocatori nella room dopo la creazione:", [player.id for player in room.players.values()])
     print(f"DEBUG: id del giocatore che ha creato la room è: {current_player.ingr_id}")
+    #Send message to change the state to LOBBY
     response = json.dumps({
         "action": "ROOM_CREATED", 
         "code": game_code, 
@@ -38,7 +38,7 @@ async def handle_start_game(websocket, current_player, data):
     })
     await websocket.send(response)
 
-    #Invio del messaggio per aggiornare l'interfaccia della LOBBY 
+    #Send message to update LOBBY interface (now it has only the starting player)
     response = json.dumps({
             "action": "UPDATE_CURRENT_PLAYERS", 
             "players_id": [current_player.ingr_id],
@@ -47,21 +47,20 @@ async def handle_start_game(websocket, current_player, data):
     await websocket.send(response)
 
     
-    await manager.broadcast(json.dumps({
+    '''await manager.broadcast(json.dumps({
         "action": "PLAYER_READY", 
         "player_id": current_player.id
-    }), exclude=websocket)
+    }), exclude=websocket)'''
 
 #Quando un nuovo giocatore si aggiunge alla partita:
 # - La sua interfaccia deve passare a LOBBY_STATE con is_starting_player a False
 # - Si deve aggiungere il giocatore alla room OK
 # - Si deve creare un nuovo ingr_id per l'utente che sia diverso da tutti quelli già presenti (ogni volta si prende da DB) OK
 # - Si deve avvisare ogni giocatore nella room che si è unito un nuovo giocatore (per adesso si avvisa solo il giocatore che ha avviato la partita) OK
+'''Method to add a new player in an existing playing room'''
 async def handle_join_room(websocket, current_player, data):
-    #Si aggiunge un utente alla partita  
     game_code = data.get("code")
     room = room_manager.get_room(game_code)
-    #ingr_possible_ids = db.get_ingredients()
 
     if room is None:
         await websocket.send(json.dumps({"action": "ERROR", "message": "Room not found"}))
@@ -71,9 +70,9 @@ async def handle_join_room(websocket, current_player, data):
 
     found_unique = False
     attempts = 0
-    max_attempts = 20 # Sicurezza per evitare cicli infiniti se il DB è piccolo
+    max_attempts = 20
     
-    assigned_ingr = "chili" # Fallback predefinito
+    assigned_ingr = "chili" # default ingredient id
 
     while not found_unique and attempts < max_attempts:
         random_candidate = db.get_random_ingredient()
@@ -86,19 +85,6 @@ async def handle_join_room(websocket, current_player, data):
 
     current_player.ingr_id = assigned_ingr
     room.add_player(current_player)
-
-    players_in_room = room.players.values()
-
-    print("Giocatori nella room dopo l'aggiunta:", [player.id for player in room.players.values()])
-
-    for player in players_in_room:
-        taken_ids.append(player.ingr_id)
-
-    #TO DO prendere da DB fin tanto che non se ne trova uno diverso 
-    #available_ids = list(set(ingr_possible_ids) - set(taken_ids))
-    #current_player.ingr_id = available_ids[0]  
-
-    #print(f"Player {current_player.id} ha preso ingr_id: {current_player.ingr_id}")
 
     #Messaggio inviato al giocatore che ha preso parte ad una room per farlo passare a LobbyState
     print(f"DEBUG: id del giocatore aggiunto è: {current_player.ingr_id}")
