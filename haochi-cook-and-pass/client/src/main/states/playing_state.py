@@ -46,9 +46,9 @@ class PlayingState(BaseState):
             print("Chiudo il clock")
             running = False       
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            self.gestisci_pressione(pygame.mouse.get_pos())
+            self.handle_click(pygame.mouse.get_pos())
         elif event.type == pygame.MOUSEBUTTONUP:
-            self.gestisci_rilascio()
+            self.handle_release()
 
     def start_game(self):
         #sistemato
@@ -58,13 +58,13 @@ class PlayingState(BaseState):
         self.cook_timer.start()
 #        print("Non è stato possibile settare il timer")    
 
-    def gestisci_pressione(self, mouse_pos):
+    def handle_click(self, mouse_pos):
         for elem in [self.plate] + self.ingredients:
             #aggiorna il dragging a True per l'elemento
             elem.check_click(mouse_pos)
         #print("Premuto tasto")
 
-    def gestisci_rilascio(self):
+    def handle_release(self):
         for index, elem in enumerate(self.ingredients):
                 elem.stop_dragging()
                 if not elem.is_in_plate:
