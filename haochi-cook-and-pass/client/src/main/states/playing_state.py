@@ -40,8 +40,9 @@ class PlayingState(BaseState):
             
             remaining = self.get_current_ingrendients()
             send_queue.put(json.dumps({
-                "action": "UPDATE_INGREDIENTS", 
-                "ingrendients": remaining
+                "action": "QUIT_ROOM", 
+                #Modificato
+                #"ingrendients": remaining
             }))
             print("Chiudo il clock")
             running = False       

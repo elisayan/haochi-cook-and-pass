@@ -45,6 +45,9 @@ class GameController:
             
             self.view.draw(self.model)
             clock.tick(60)
+        #Aggiunta terminazione del motore di pygame per evitare il blocco della finestra    
+        pygame.quit()
+        sys.exit()    
 
     def _handle_network(self, raw_msg):
         data = json.loads(raw_msg)

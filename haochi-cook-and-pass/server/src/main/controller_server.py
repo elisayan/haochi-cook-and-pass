@@ -253,10 +253,10 @@ async def handle_start_level(websocket, current_player, data):
             #else:
                 #TO DO @mandare messaggio a tutti i giocatori per passare all'interfaccia finale delle statistiche
 
-async def handle_update_ingrendients(websocket, current_player, data):
+'''Modificato async def handle_update_ingrendients(websocket, current_player, data):
     current_player.current_ingredients = data.get("ingredients", [])
     print(f"Aggiornati ingredienti di {current_player.ingr_id}: {current_player.current_ingredients}")
-
+'''
 async def handle_pass_ingredient(websocket, current_player, data):
     #bisogna prendere la websocket del giocatore che si trova a sinistra o a destra a sinistra
     print("IL SERVER ha ricevuto la richiesta di passaggio dell'ingrediente")
@@ -267,10 +267,10 @@ async def handle_pass_ingredient(websocket, current_player, data):
         print(f"Stanza non trovata per il giocatore {current_player.id}")
         return
     if pass_direction == "LEFT":
-        #prendere la websocket del player a sinistra di quello corrente
+        #l'ingrediente passato a sinistra nella destinazione è ricevuto a destra
         target_direction = "RIGHT"
     elif pass_direction == "RIGHT":
-        #prendere la websocket del player a destra di quello corrente
+        #l'ingrediente passato a destra nella destinazione è ricevuto a sinistra
         target_direction = "LEFT"
     print(target_direction)    
 #TO DO creare la funzione
@@ -432,5 +432,5 @@ ACTION_HANDLERS = {
     "START_PLAYING": handle_start_playing,
     "PASS_INGREDIENT": handle_pass_ingredient,
     "PLATE_COMPLETE": handle_plate_complete,
-    "UPDATE_INGREDIENTS": handle_update_ingrendients
+   # Modificato "UPDATE_INGREDIENTS": handle_update_ingrendients
 }
