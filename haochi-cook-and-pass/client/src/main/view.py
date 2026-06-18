@@ -16,9 +16,9 @@ class GameView:
         self.start_img = self.load_img("start_button.png")
         self.tutorial_img = self.load_img("tutorial_button.png")
         self.exit_img = self.load_img("exit_button.png")
-        self.create_img = self.load_img("create.png")
-        self.join_img = self.load_img("join.png")
-        self.back_arrow_img = self.load_img("back_arrow.png")
+        self.create_img = self.load_img("create.PNG")
+        self.join_img = self.load_img("join.PNG")
+        self.back_arrow_img = self.load_img("back_arrow.PNG")
         self.home_bg = pygame.transform.smoothscale(self.load_img("homepage.jpg", alpha=False), (width, height))
         self.general_bg = pygame.transform.smoothscale(self.load_img("background.jpg", alpha=False), (width, height))
 

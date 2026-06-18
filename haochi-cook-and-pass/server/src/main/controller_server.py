@@ -276,7 +276,7 @@ async def handle_pass_ingredient(websocket, current_player, data):
 #TO DO creare la funzione
     target_player = room.get_near_player(current_player, pass_direction)
     if target_player is not None:
-        print(f"Il vicino a cui passare l'ingrediente {data.get("ingr_name")} è {target_player.ingr_id}")
+        print(f"Il vicino a cui passare l'ingrediente {data.get('ingr_name')} è {target_player.ingr_id}")
         target_player_socket = target_player.websocket        
         response = json.dumps({
             "action": "NEW_INGREDIENT", 
@@ -287,7 +287,7 @@ async def handle_pass_ingredient(websocket, current_player, data):
         })
         await target_player_socket.send(response)
     else:
-        print(f"ATTENZIONE: Nessun vicino trovato in direzione {data.get("direction")} per questo giocatore!")    
+        print(f"ATTENZIONE: Nessun vicino trovato in direzione {data.get('direction')} per questo giocatore!")    
 
 
 async def handle_plate_complete(websocket, current_player, data):

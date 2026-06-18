@@ -43,7 +43,7 @@ async def register_client(websocket):
 
 async def main():
     db.connect()
-    async with websockets.serve(register_client, "localhost", 8765):
+    async with websockets.serve(register_client, "0.0.0.0", 8765):
         print("Server WebSocket e MongoDB pronti!")
         await asyncio.Future()
 
