@@ -188,32 +188,42 @@ class Player_Id(Ingredient):
 import threading
 from time import sleep
 
-#Thread che viene lanciato parallelamente al gioco per gestire il passare del tempo per comporre ad inviare il piatto corrente
+#Thread che viene lanciato parallelamente al gioco per gestire il passare del tempo per comporre ed inviare il piatto corrente
 class CountdownThread(threading.Thread):
     def __init__(self, clock_time):
-        super().__init__()
+        super().__init__(daemon=True) #il thread viene contrassegnato come deamon in modo tale che se l'applicazione si chiude anche questo thread si interrompa
         self.curr_time = 0.0
         self.clock_time = clock_time
         # Flag per fermare il thread in modo pulito se necessario
         self.running = True 
+        self._lock = threading.Lock()  # Per garantire la thread-safety delle azioni effettuate sul clock
 
     def run(self):
 #comportamento del thread è quello di attendere 0.1 secondi e poi aggiornare il valore 
         while self.running:
             sleep(0.1)
-            self.curr_time += 0.1
+            with self._lock:
+                self.curr_time += 0.1
 
     def get_current_time(self):
-        """Ritorna il valore attuale del timer"""
-        print("clock_time", self.clock_time)
-        print("tempo trascorso", round(self.curr_time, 1))
-        return round(self.curr_time, 1)
+        with self._lock:
+            """Ritorna il valore attuale del timer"""
+            print("clock_time", self.clock_time)
+            print("tempo trascorso", round(self.curr_time, 1))
+            return round(self.curr_time, 1)
     
     def reset_timer(self):
-        self.curr_time = 0.0
+        with self._lock: 
+            self.curr_time = 0.0
+
     # usato per settare il tempo in cui ciascun piatto deve essere completato
     def reset_alarm_time(self, max_time_for_plate_completion):
-        self.clock_time = max_time_for_plate_completion
+        with self._lock:
+            self.clock_time = max_time_for_plate_completion
+
+    def stop_timer(self):    
+        with self._lock:
+            self.running = False
 
 class PartialMessage():
     pass

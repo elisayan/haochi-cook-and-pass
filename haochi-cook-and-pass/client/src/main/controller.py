@@ -1,7 +1,7 @@
 import json
 import sys
 import pygame
-from .connection import msg_queue, send_queue, shutdown
+from .connection import msg_queue, send_queue, shutdown, network_status
 
 class GameController:
     def __init__(self, model, view):
@@ -14,6 +14,12 @@ class GameController:
 
        # i = 0 #TO DO rimuovere
         while running:
+            if network_status["server_disconnected"]:
+                print("Rilevato crash del server nel controller principale!")
+                # Reindirizza il gioco a uno stato di disconnessione o mostra un errore globale
+                self.model.set_state("MENU")
+                network_status["server_disconnected"] = False
+
             while not msg_queue.empty():
                 self._handle_network(msg_queue.get())
 

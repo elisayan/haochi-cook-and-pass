@@ -36,7 +36,7 @@ class PlayingState(BaseState):
 
     def handle_input(self, event, send_queue, model):
         if event.type == pygame.QUIT:
-            self.stop_clock()
+            self.cook_timer.stop_timer()    
             
             remaining = self.get_current_ingrendients()
             send_queue.put(json.dumps({
@@ -44,8 +44,7 @@ class PlayingState(BaseState):
                 #Modificato
                 #"ingrendients": remaining
             }))
-            print("Chiudo il clock")
-            running = False       
+            print("Chiudo il clock")      
         elif event.type == pygame.MOUSEBUTTONDOWN:
             self.handle_click(pygame.mouse.get_pos())
         elif event.type == pygame.MOUSEBUTTONUP:
@@ -110,7 +109,7 @@ class PlayingState(BaseState):
                     print("Lo score del giocatore è: ", self.score)
                     print("Il player ha finito le sue ricette, deve mandare un messaggino al server per avvisarlo che è in attesa anche se ancora può dover aspettare gli altri e passare ingredienti")
                     #TO DO si chiude il timer
-                    self.stop_clock() 
+                    self.cook_timer.stop_timer()
                     self.passed_time = 0.0
                     #TO DO MODIFICA STATO ATTESA DEL GIOCATORE PER PASSARE A LIVELLO DOPO
                     self.send_msg += [CompletePlateMsg(self.current_recipe, 0.0, finished_all_plates = True)]
@@ -188,7 +187,7 @@ class PlayingState(BaseState):
                 print("Il player ha finito le sue ricette, deve mandare un messaggino al server per avvisarlo che è in attesa anche se ancora può dover aspettare gli altri e passare ingredienti")
                 self.send_msg += [CompletePlateMsg(self.current_recipe.copy(), plate_total_score, finished_all_plates = True)]
                 #TO DO si chiude il timer
-                self.stop_clock() 
+                self.cook_timer.stop_timer()
                 self.passed_time = 0.0
             else: #caso inviato il piatto ma ce ne sono altri
                 self.send_msg += [CompletePlateMsg(self.current_recipe.copy(), plate_total_score)]
@@ -235,10 +234,6 @@ class PlayingState(BaseState):
         added_ingr = Ingredient(ingr_name, dimension_np, (0, 0), score)
         #TO DO mettere posizione fittizia direttamente nel costruttore a None
         self.new_ingredients += [(added_ingr, Side[side])]
-
-    def stop_clock(self):
-        self.cook_timer.running = False    
-        print(self.cook_timer.running)
 
     #metodo per aggiungere una lista di ingredienti all'inizio del livello
     def add_starting_ingredients(self, list_ingredients):
