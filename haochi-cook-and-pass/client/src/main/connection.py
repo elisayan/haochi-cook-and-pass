@@ -10,9 +10,9 @@ network_status = {
     "server_disconnected": False
 } #dizionario condiviso che avverte il giocatore quando il server si sconnete
 
-async def websocket_client():
+async def websocket_client(server_ip):
     global running
-    uri = "ws://localhost:8765"
+    uri = f"ws://{server_ip}:8765"
 
     websocket = None
     while running: 
@@ -60,9 +60,9 @@ async def websocket_client():
             print("Tentativo di riconnessione tra 3 secondi")
             await asyncio.sleep(3)    
 
-def start_network():
+def start_network(server_ip="localhost"):
     """Funzione punto di ingresso per il Thread."""
-    asyncio.run(websocket_client())
+    asyncio.run(websocket_client(server_ip))
 
 def shutdown():
     global running
