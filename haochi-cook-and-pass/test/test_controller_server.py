@@ -149,7 +149,7 @@ def test_handle_start_level_level_0():
         all_ingredients_of_recipes.extend(rec["ingredients"])
 
 
-   #check that the list of recipingredients is sent to each player with a message of action "STARTING_INGREDIENTS" and the number of ingredients is correct for completing all the recipes
+   #check that the list of ingredients is sent to each player with a message of action "STARTING_INGREDIENTS" and the number of ingredients is correct for completing all the recipes
     ing1 = json.loads(player1.websocket.send.await_args_list[1].args[0])
     ing2 = json.loads(player2.websocket.send.await_args_list[1].args[0])
     assert ing1["action"] == "STARTING_INGREDIENTS"

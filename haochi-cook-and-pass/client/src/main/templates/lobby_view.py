@@ -38,10 +38,6 @@ def draw(screen, game_code, player_id, players_id, is_starting_player, font, tit
     if is_starting_player:
         center = circle[0]
         radius = circle[1]
-        #right_margin = 80
-        #center_x = width - radius - right_margin
-        #center_y = height // 2
-        #center = (center_x, center_y)
 
         pygame.draw.circle(screen, (255, 255, 255), center, radius)
         draw_dashed_circle(screen, C_BORDER, center, radius, width=3, dash_length=8)
@@ -61,22 +57,7 @@ def draw(screen, game_code, player_id, players_id, is_starting_player, font, tit
         pygame.draw.rect(screen, start_color, start_btn, border_radius=20)
         btn_txt = font.render("START", True, (255, 255, 255))
         screen.blit(btn_txt, btn_txt.get_rect(center=start_btn.center))
-        
-    #else:   
-        #Schermata statica di sola attesa
-        #quit_btn = pygame.Rect(80, 500, 100, 50)
-        #pygame.draw.rect(screen, (255, 165, 0), quit_btn)
-        #text = font.render("QUIT", True, (255, 255, 255))
-        #screen.blit(text, (quit_btn.x + 25, quit_btn.y + 10))
-        #scale = (100, 100)
-        #position = (width/2 - scale[0]/2, height/2 - scale[1]/2)
-        #plate_pos = (position[0] - 15, position[1] - 15)
-        #position = (width/2, height/2)
-        #plate_pos = (position[0], position[1])
-        #_render_player_id(screen, "plate", plate_pos, (scale[0] + 30, scale[1] + 30))
-        #_render_player_id(screen, player_id, position, scale)
 
-    #quit_rect = pygame.Rect(40, height - 80, 120, 50)
     pygame.draw.rect(screen, (255, 120, 100), quit_btn, border_radius=20)
     quit_txt = font.render("EXIT", True, (255, 255, 255))
     screen.blit(quit_txt, quit_txt.get_rect(center=quit_btn.center))
@@ -92,7 +73,7 @@ def draw_dashed_circle(surface, color, center, radius, width=2, dash_length=10):
         start_angle = (i * 2 * math.pi / num_dashes)
         end_angle = start_angle + (dash_length / radius)
         
-        # Disegniamo un arco per ogni tratto
+        # Si disegna il cerchio con un arco per ogni tratto
         pygame.draw.arc(surface, color, 
                         (center[0]-radius, center[1]-radius, radius*2, radius*2), 
                         start_angle, end_angle, width)

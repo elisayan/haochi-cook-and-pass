@@ -21,13 +21,10 @@ def draw_game(screen, plate, list_elem, current_recipe, next_ingredient, show_er
             _render_element(screen, path_arrow, [50, height / 2], [80, 80], 90)
 
         path_clock = Path(__file__).resolve().parent.parent / "images" / "clock1.png"
-        # Posizione: [40, 40], Dimensione: [50, 50]
         _render_element(screen, path_clock, [40, 40], [50, 50])
 
         path_tick = Path(__file__).resolve().parent.parent / "images" / "clock2.png"
-        # Lancetta (Tick)
-        # Posizione: DEVE ESSERE LA STESSA [40, 40] per ruotare sul centro dell'orologio
-        # Dimensione: [8, 30] (larghezza 8, altezza 30 per non uscire dal bordo)
+        #lancetta del timer
         _render_element(screen, path_tick, [40, 40], [8, 14], -tick_rotation, [2, -5])
 
         #Si renderizza solo il primo ingrediente del piatto corrente in alto al centro
@@ -42,8 +39,6 @@ def draw_game(screen, plate, list_elem, current_recipe, next_ingredient, show_er
             pygame.draw.rect(screen, (255, 255, 255), bg_rect, border_radius=10)
             pygame.draw.rect(screen, (0, 0, 0), bg_rect, width=1, border_radius=10)
             _render_element(screen, next_ingredient.path, next_ingredient.position, next_ingredient.dimension)
-         
-        #next_ingredient = []
 
         #  Ingredienti e Piatto
         for elem in [plate] + list_elem + current_recipe:
@@ -54,17 +49,9 @@ def draw_game(screen, plate, list_elem, current_recipe, next_ingredient, show_er
             path_error = Path(__file__).resolve().parent.parent / "images" / "error.png"
             scale_factor = 0.7
             _render_element(screen, path_error, plate.position, plate.dimension * scale_factor)
-            #surface = pygame.image.load(str(self.path_error)).convert_alpha()
-            
-           # surface = pygame.transform.scale(surface, plate.dimension * scale_factor).convert_alpha()
-            # Calcoliamo l'angolo in alto a sinistra partendo dal centro (position)
-            #top_left_x = plate.position[0] - (plate.dimension[0] * scale_factor) / 2
-            #top_left_y = plate.position[1] - (plate.dimension[1] * scale_factor) / 2
-            
-            # DISEGNO: primo argomento è l'immagine, secondo è la coordinata (x, y)
-            #self.screen.blit(surface, (top_left_x, top_left_y))
+
         draw_score(screen, score, width)    
-        # 4. Aggiornamento display
+        # Aggiornamento display
         pygame.display.update()
 
 def draw_score(screen, score, width):
@@ -92,13 +79,10 @@ def _render_element(screen, path, position, dimension, rotation = 0, pivot_offse
         surface = pygame.transform.rotate(surface, rotation)
         
         if pivot_offset is not None:
-            # CONDIZIONE PIVOT: Calcoliamo lo sfasamento del centro
-            # Dobbiamo ruotare il vettore offset della stessa quantità
+            # Si ruota il vettore offset della stessa quantità
             offset = pygame.math.Vector2(pivot_offset)
-            # Ruotiamo l'offset (Pygame ruota in senso antiorario, quindi usiamo -rotation)
             offset_rotated = offset.rotate(-rotation)
-            
-            # Il nuovo centro sarà la posizione desiderata + l'offset ruotato
+            # Il nuovo centro è la posizione desiderata + l'offset ruotato
             rect = surface.get_rect(center=pygame.math.Vector2(position) + offset_rotated)
         else:
             # Rotazione standard centrata

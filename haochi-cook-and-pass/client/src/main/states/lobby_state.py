@@ -4,13 +4,9 @@ import json
 from .base_state import BaseState
 from ..utilities import *
 
-#Per rimuovere il testing mettere is_starting_player a False e commentare riga 23 e nella "view" togliere il room_code fittizio riga 20 e commentare riga 16
-
 class LobbyState(BaseState):
     def __init__(self, model):
         super().__init__(model)
-        #todo aggiungere lista dei giocatori e il loro stato di ready
-        #self.players_ready = ["orange", "pepper", "rice", "shrimp"]
         self.ready_players = [] #lista di Player_Id 
         self.is_starting_player = True
         self.room_code = model.game_code
@@ -19,14 +15,10 @@ class LobbyState(BaseState):
         self.playing_turn = {} #giro della partita #piatto e player_id
         self.quit_btn = pygame.Rect(40, 500, 120, 50)
         self.start_btn = pygame.Rect(820, 500, 140, 50)
-        #TO DO da rimuovere perchè usato solo per testing
-        self.update_players_in_game(["orange", "pepper", "rice", "shrimp"], self.is_starting_player) #TO DO da rimuovere, usato solo per fare delle prove
         
 
     def handle_input(self, event, send_queue, model):
-        #TO DO Con la send_queue si può mandare al server direttamente il messaggio di start e stop
-        # Inoltre si ha anche il model allora anche l'ordine del giro si potrebbe mandare direttamente qui 
-        if event.type == pygame.QUIT:# TO DO mandare messaggio che il giocatore lascia la partita 
+        if event.type == pygame.QUIT:
             send_queue.put(json.dumps({"action": "QUIT_ROOM"}))
             model.switch_to("MENU")
         elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -134,7 +126,7 @@ class LobbyState(BaseState):
         plates_pos = self._get_plates_positions(self.circle[0], self.circle[1], len(self.ready_players))
         plate_scale = 90
         for index, pos in enumerate(plates_pos):
-            plate = Element("plate.png", (plate_scale, plate_scale), pos)#(pos[0] - plate_scale/2, pos[1] - plate_scale/2)
+            plate = Element("plate.png", (plate_scale, plate_scale), pos)
             plate.set_plate()
             self.plates.append(plate)
             if self.playing_turn.get(index):
@@ -173,12 +165,6 @@ class LobbyState(BaseState):
                     if elem.detect_collision_plate(plate):
                         found_collision = True
                         #Verificare che non ci siano già altri player_id nel piatto, altrimenti riportare quello rilasciato nella sua posizione originale
-                        """is_already_occupied = False
-                        for pid in self.ready_players:
-                            if pid != elem and pid.is_in_plate and np.allclose(pid.position, plate.position): #numpy array identici
-                                is_already_occupied = True
-                                break"""
-                        #if not is_already_occupied:
                         if self.playing_turn.get(index) is not None:
                             #si cerca di mettere l'id dell'utente in un piatto già occupato
                             #si sostituiscono i due elementi

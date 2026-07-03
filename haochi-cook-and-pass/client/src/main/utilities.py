@@ -16,7 +16,7 @@ class Element ():
         self.dimension = np.array([float(dimension[0]), float(dimension[1])])
         self.position = np.array([float(position[0]), float(position[1])])
         self.dragging = False
-        self.velocity = np.zeros(2) #np.array([0.0, 0.0])
+        self.velocity = np.zeros(2) 
         self.is_plate = False
 
     def set_plate(self):
@@ -101,10 +101,10 @@ class Element ():
             if getattr(ingr, "name", None) and ingr.name == next_ingredient_name:
                 return
 
-        # REGOLA 2: Se l'ingrediente è già nel piatto, non deve più scontrarsi con gli altri
+        # se l'ingrediente è già nel piatto, non deve più scontrarsi con gli altri
         if getattr(self, 'is_in_plate', False):
             return
-    # Verifichiamo se c'è effettivamente una collisione
+    # Verifica se c'è effettivamente una collisione
         l1, r1, t1, b1 = self.get_boundaries()
         l2, r2, t2, b2 = other_element.get_boundaries()
 
@@ -117,9 +117,8 @@ class Element ():
 
             min_overlap = min(overlap_sx, overlap_dx, overlap_up, overlap_dw)
 
-            #NON VA ??? TO DO
-            # Logica dei rimbalzi identica alla tua, ma usando self.velocity[0] e [1]
-            # Spostiamo l'oggetto fuori dalla collisione immediatamente
+            # Logica dei rimbalzi usando self.velocity[0] e [1]
+            # Si sposta l'oggetto fuori dalla collisione immediatamente
             if min_overlap == overlap_sx:
                 if not self.dragging: self.position[0] -= min_overlap
                 if not other_element.dragging: other_element.position[0] += min_overlap
@@ -141,7 +140,6 @@ class Element ():
         self.position = np.array([float(x), float(y)])            
 
 class Ingredient(Element):
-    #TODO controllare se è necessario mantenere score in Ingredient
     def __init__(self, image_name, dimension:tuple, position, score):
         super().__init__(image_name, dimension, position)
         self.is_in_plate = False
@@ -151,11 +149,9 @@ class Ingredient(Element):
         
 
     def check_collision_side(self, other_elem, next_ingredient_name = None):
-        # Se l'ingrediente NON è nel piatto, esegui la logica di rimbalzo del genitore
+        # Se l'ingrediente NON è nel piatto, si esegue la logica di rimbalzo all'altro
         if not self.is_in_plate:
             return super().check_collision_side(other_elem, next_ingredient_name)
-        
-        # Se è nel piatto, non chiamiamo il genitore (l'ingrediente resta fermo)
         return None
     
     def inside(self, plate):
@@ -171,9 +167,6 @@ class Ingredient(Element):
     def detect_collision_plate(self, plate):
         #Aggiorna lo stato (posizione e is_in_plate) dell'ingradiete se entra nel piatto
         if self.inside(plate):
-           # self.is_in_plate = True
-           # self.position = plate.position
-           # self.velocity = np.zeros(2)
             print(f'Ingrediente {self.name} è nel piatto')
             return True
         return False

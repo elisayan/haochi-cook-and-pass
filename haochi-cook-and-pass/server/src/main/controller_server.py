@@ -54,9 +54,9 @@ async def handle_start_game(websocket, current_player, data):
 
 #Quando un nuovo giocatore si aggiunge alla partita:
 # - La sua interfaccia deve passare a LOBBY_STATE con is_starting_player a False
-# - Si deve aggiungere il giocatore alla room OK
-# - Si deve creare un nuovo ingr_id per l'utente che sia diverso da tutti quelli già presenti (ogni volta si prende da DB) OK
-# - Si deve avvisare ogni giocatore nella room che si è unito un nuovo giocatore (per adesso si avvisa solo il giocatore che ha avviato la partita) OK
+# - Si deve aggiungere il giocatore alla room
+# - Si deve creare un nuovo ingr_id per l'utente che sia diverso da tutti quelli già presenti (ogni volta si prende da DB)
+# - Si deve avvisare l'host della room che si è unito un nuovo giocatore
 '''Method to add a new player in an existing playing room'''
 async def handle_join_room(websocket, current_player, data):
     game_code = data.get("code")
@@ -106,7 +106,6 @@ async def handle_join_room(websocket, current_player, data):
         }))
 
 async def handle_quit_room(websocket, current_player, data):        
-    #TO DO Decommentare per avere corretto funzionamento
 
     #modificato in modo che se esce l'host allora la stanza venga chiusa 
     # e tutti i giocatori vengano riportati al menu, 
@@ -179,7 +178,6 @@ async def handle_start_playing(websocket, current_player, data):
     print(f"DEBUG: Ricevuto ordine posizioni: {data.get('players_position')}")
     room = room_manager.get_room(current_player.room_code)
     room.set_players_position_in_play(data.get("players_position"))
-    #ADDED NEW CODE
     room.set_in_game()
     #Si cambia lo stato di tutti i giocatori in PLAYING tutti i giocatori
     ws_players_in_game = []
@@ -190,10 +188,10 @@ async def handle_start_playing(websocket, current_player, data):
         "current_state": "PLAYING",
     }), include_only=ws_players_in_game)
     await handle_start_level(websocket, current_player, data)
-    #TO DO:
-    # @ pensare a come distribuire i piatti da completare ai giocatori attraverso STARTING_RECIPES
-    # @ pensare a come distribuire tutti gli ingredienti dei piatti tra i vari giocatori attraverso messaggio STARTING_INGREDIENTS
-        
+
+#Quando si inizia un nuovo livello:    
+# - Si distribuiscono i piatti da completare ai giocatori attraverso STARTING_RECIPES
+# - Si distribuiscono tutti gli ingredienti dei piatti tra i vari giocatori attraverso messaggio STARTING_INGREDIENTS    
 async def handle_start_level(websocket, current_player, data):
     room = room_manager.get_room(current_player.room_code)
     level_setting = levels_setting[f"level_{room.curr_level}"]
@@ -225,8 +223,6 @@ async def handle_start_level(websocket, current_player, data):
         
         weights = [random.uniform(0.5, 1.5) for _ in range(num_players)]
         total_weight = sum(weights)
-        #remainder = len(shared_ingredients_in_play) % num_players
-        #num_ingr_per_player = len(shared_ingredients_in_play) // len(room.players)
         start_index = 0
         players = list(room.players.values())
         for i, player in enumerate(players):
@@ -250,13 +246,7 @@ async def handle_start_level(websocket, current_player, data):
             })
             await player.websocket.send(current_player_ingredients_msg)
             print(f"inviato al giocatore {player.ingr_id} gli ingredienti {player_ingredients}")
-            #else:
-                #TO DO @mandare messaggio a tutti i giocatori per passare all'interfaccia finale delle statistiche
 
-'''Modificato async def handle_update_ingrendients(websocket, current_player, data):
-    current_player.current_ingredients = data.get("ingredients", [])
-    print(f"Aggiornati ingredienti di {current_player.ingr_id}: {current_player.current_ingredients}")
-'''
 async def handle_pass_ingredient(websocket, current_player, data):
     #bisogna prendere la websocket del giocatore che si trova a sinistra o a destra a sinistra
     print("IL SERVER ha ricevuto la richiesta di passaggio dell'ingrediente")
@@ -273,7 +263,6 @@ async def handle_pass_ingredient(websocket, current_player, data):
         #l'ingrediente passato a destra nella destinazione è ricevuto a sinistra
         target_direction = "LEFT"
     print(target_direction)    
-#TO DO creare la funzione
     target_player = room.get_near_player(current_player, pass_direction)
     if target_player is not None:
         print(f"Il vicino a cui passare l'ingrediente {data.get('ingr_name')} è {target_player.ingr_id}")
@@ -308,7 +297,7 @@ async def handle_plate_complete(websocket, current_player, data):
         if room.num_waiting_players >= len(room.players):
             room.num_waiting_players = 0
             # si deve passare al livello successivo
-            # TO DO inviare STARTING_INGREDIENTS e STARTING_PLATES a tutti i giocatori
+            # inviare STARTING_INGREDIENTS e STARTING_PLATES a tutti i giocatori
             room.curr_level += 1
             next_level_key = f"level_{room.curr_level}"
             
@@ -345,10 +334,6 @@ async def handle_plate_complete(websocket, current_player, data):
                         }
                     }))
 
-    # TO DO  
-    # si può anche pensare di tenere traccia attraverso un dizionario del numero di ciascun tupo di ingrediente usato dal giocatore
-    # e anche del numero di piatti composti e del numero di essi per ogni tipo
-    # in modo da realizzare il report
     
 async def handle_player_disconnect(player, player_id):
     room = room_manager.get_room(player.room_code)
@@ -432,5 +417,4 @@ ACTION_HANDLERS = {
     "START_PLAYING": handle_start_playing,
     "PASS_INGREDIENT": handle_pass_ingredient,
     "PLATE_COMPLETE": handle_plate_complete,
-   # Modificato "UPDATE_INGREDIENTS": handle_update_ingrendients
 }

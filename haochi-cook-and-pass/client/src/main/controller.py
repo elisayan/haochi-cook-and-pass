@@ -12,7 +12,6 @@ class GameController:
         clock = pygame.time.Clock()
         running = True
 
-       # i = 0 #TO DO rimuovere
         while running:
             if network_status["server_disconnected"]:
                 print("Rilevato crash del server nel controller principale!")
@@ -31,12 +30,6 @@ class GameController:
                     
                 # Lo stato corrente decide cosa fare con i click/tasti
                 self.model.current_state.handle_input(event, send_queue, self.model)
-                #i += 1
-                #if i < 200:
-                #    print(i)
-                #if i == 200:
-                #    print("CAMBIO GIOCATORI IN ATTESA")
-                #    self.model.current_state.update_players_in_game(["pepper", "rice", "shrimp"], True)
 
             #nel while loop del gioco se lo stato è PLAYING (la partita è in corso) ad ogni ciclo si deve aggiornare lo stato del gioco    
             if self.model.current_state_key in ["PLAYING", "LOBBY", "JOIN_INPUT", "AWAIT_JOIN"]:
@@ -45,8 +38,7 @@ class GameController:
                 if list_msg_obj:
                     for sent_obj in list_msg_obj:
                         sent_msg = sent_obj.msg
-                        sent_msg["player_id"] = self.model.player_id #TO DO il player id non serve
-                        #TO DO Probabilmente non serve l'id del player perchè "controller_server", che gestisce la ricezione dei messaggi dei giocatori, conosce il giocatore che ha inviato il messaggio dato che lo riceve su una certa websocket
+                        sent_msg["player_id"] = self.model.player_id
                         send_queue.put(json.dumps(sent_msg))    
             
             self.view.draw(self.model)
@@ -71,20 +63,12 @@ class GameController:
         elif data.get("action") == "STARTING_RECIPES":
             #lista di tuple (nome, dimensione, score)
             self.model.current_state.add_starting_recipes(data.get("recipes"))
-        #messaggio inviato per la lobby (sala di attesa)      
-        #if data.get("action") == "PLAYERS_IN_GAME":
-            #-lista dei giocatori (loro id)
-            #-si dice se il giocatore corrente è quello che ha iniziato la partita  
-        #    self.model.current_state.update_players_in_game(data.get("players_id"), data.get("is_starting_player"))
         elif data.get("action") == "ERROR":
             print("ERRORE DAL SERVER:", data.get("message"))
             self.model.current_state.error_message = data.get("message")
         elif data.get("action") == "ROOM_CLOSED":
             print("LA STANZA È STATA CHIUSA DALL'HOST")
-            #self.model.set_state("MENU")
             self.model.current_state.error_message = data.get("message")
-            #print("stato in ROOM CLOSED", self.model.current_state_key)
-            #print("ERRORE DAL SERVER:", self.model.error_message)
 
         #inviato quando si aggiunge un nuovo giocatore alla partita
         elif data.get("action") == "UPDATE_CURRENT_PLAYERS":
