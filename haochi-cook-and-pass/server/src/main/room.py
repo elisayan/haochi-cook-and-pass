@@ -20,7 +20,6 @@ class Room:
 
     def add_player(self, player):
         if len(self.players) >= 8:
-            #raise Exception("Room full")
             return False
         
         self.players[player.id] = player
@@ -33,20 +32,6 @@ class Room:
         return True
 
     def remove_player(self, player_id):
-        #removed_player_position = self.players[player_id].position
-        #if player_id in self.players:
-        #    del self.players[player_id]
-            
-        # se era host, assegna nuovo host (il primo rimasto) o None se vuota
-        #if player_id == self.host_id and self.players:
-        #    self.host_id = next(iter(self.players.keys()))
-        #elif not self.players:
-        #    self.host_id = None
-
-        #si aggiorna il giro dopo che uno dei giocatori è stato rimosso
-        #self._update_players_position_in_play(removed_player_position)
-        #self._update_state()
-
         if player_id in self.players:
             self.removed_player = self.players.pop(player_id)
             if self.removed_player.position is not None:
@@ -56,7 +41,7 @@ class Room:
                 
     def _update_state(self): #aggiorna lo stato della stanza in base ai giocatori
         if self.state in [RoomState.IN_GAME, RoomState.OVER]:
-            return  # non cambiare stato durante la partita
+            return
         
         player_count = len(self.players)
         
@@ -71,7 +56,6 @@ class Room:
     def check_all_waiting(self):
         return self.num_waiting_players > 0 and self.num_waiting_players >= len(self.players) - 1
 
-    #settata in modo casuale TO DO fare settare il giro al creatore della stanza 
     def set_random_players_position_in_play(self):
         list_players = list(self.players.values())
         for index, player in enumerate(list_players):
@@ -81,11 +65,8 @@ class Room:
 
         for pos, player_ingr_id in enumerate(players_pos_by_ingr_id):
             player = self._get_player_from_ingr_id(player_ingr_id)
-            # AGGIUNTO: Controllo di sicurezza
             if player is not None:
                 player.position = pos
-                #Capire perchè non si trova l'id corrispondente nella stanza per l'host che l'ha avviata
-                #L'HOST (creatore stanza) passava l'id con l'estensione dell'immagine dell'ingrediente
             else:
                 print(f"ATTENZIONE: Giocatore con ingrediente {player_ingr_id} non trovato nella stanza!")#debug
                 print("id dei giocatori: ")
